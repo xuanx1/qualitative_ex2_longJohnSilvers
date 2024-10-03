@@ -11,9 +11,11 @@ Lost Community was derived from the continuation of the project of grouping fish
 
 ![Coloring the Taxonomy pdf - Adobe Acrobat Pro DC (64-bit)](https://github.com/user-attachments/assets/51865ebc-1f7a-4401-980b-e05ace415f08)
 Coloring the Taxonomy
+
 In this visualization, the core structure is based on taxonomic classification, where the hierarchy follows standard taxonomic levels such as Class, Order, and Family. However, I have used color-coding to represent the ecological rolesof each species (e.g., predator, herbivore, omnivore). This approach emphasizes that even within the same Class, multiple ecological roles coexist. By combining the taxonomic framework with ecological roles, the visualization clearly highlights the diversity of functions within each taxonomic group.
 
 ![Fishy Footprint pdf - Adobe Acrobat Pro DC (64-bit)](https://github.com/user-attachments/assets/c3ed9df4-3734-45a8-ae4f-434a96450710)
 Fishy Footprint
+
 In this visualization, I will focus on mapping the ecological roles of the collected fish specimens. By using a map, I aim to analyze ecological patterns across different regions, such as whether certain areas are dominated by predator species or herbivores. Each ecological role will be represented with color-coding, allowing for a clear distinction between roles. This will help identify patterns, such as regions where predators are more common compared to areas with a higher presence of herbivores or omnivores.
 
