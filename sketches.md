@@ -9,11 +9,11 @@ Translator concept comes from the need to simplify scientific names to make the 
 ![3](https://github.com/user-attachments/assets/236d5257-dd3c-4b01-a81f-87885c4458bf)
 Lost Community was derived from the continuation of the project of grouping fishes via depths. While various fishes live in various depths, there is a huge chance that some live in similar / same depth. This tool allows us to visualise clusters of fishes and ultimately, habitat within the same depth, gathering potential underwater communities previously unimagined, like a population density of fishes in the ocean. In a form of a heat map, it show depths that are "popular" amongst fishes. Upon clicking the clusters, the fishes that are found in that depth are shown.
 
-![Coloring the Taxonomy pdf - Adobe Acrobat Pro DC (64-bit)](https://github.com/user-attachments/assets/7c58b707-311d-4720-90cb-636aea4aba6a)
+![Coloring the Taxonomy pdf - Adobe Acrobat Pro DC (64-bit)](https://github.com/user-attachments/assets/51865ebc-1f7a-4401-980b-e05ace415f08)
 Coloring the Taxonomy
 In this visualization, the core structure is based on taxonomic classification, where the hierarchy follows standard taxonomic levels such as Class, Order, and Family. However, I have used color-coding to represent the ecological rolesof each species (e.g., predator, herbivore, omnivore). This approach emphasizes that even within the same Class, multiple ecological roles coexist. By combining the taxonomic framework with ecological roles, the visualization clearly highlights the diversity of functions within each taxonomic group.
 
-![Fishy Footprint pdf - Adobe Acrobat Pro DC (64-bit)](https://github.com/user-attachments/assets/ddd3df68-5eb6-4b9d-81ba-7bb29fbc9c2e)
+![Fishy Footprint pdf - Adobe Acrobat Pro DC (64-bit)](https://github.com/user-attachments/assets/c3ed9df4-3734-45a8-ae4f-434a96450710)
 Fishy Footprint
 In this visualization, I will focus on mapping the ecological roles of the collected fish specimens. By using a map, I aim to analyze ecological patterns across different regions, such as whether certain areas are dominated by predator species or herbivores. Each ecological role will be represented with color-coding, allowing for a clear distinction between roles. This will help identify patterns, such as regions where predators are more common compared to areas with a higher presence of herbivores or omnivores.
 
