@@ -6,7 +6,7 @@
 First page  
 - Oceans are separated by color  
 - Shows average depth, area, and proportion of predator, prey, and others for each ocean  
-
+Clicking on a node(in this case, the ocean), directs to the second page):
 
 <img width="442" alt="child page" src="https://github.com/user-attachments/assets/a9e126c6-d5e7-4436-b418-ad8c13a6fd6d">  
 
