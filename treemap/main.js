@@ -24,9 +24,10 @@ async function fetchData() {
     // Group data by borough and complaint types-park rules, the borough is the first level of the hierarchy, and the complaint type is the second level
     const data = d3.rollup(
       response, 
-      v => v.length,
-      d => d.borough,
-      d => d.descriptor
+      v => v.length, 
+      d => d.borough, //ocean
+      d => d.descriptor, //depth
+      d => d.tba //archetype
     );
 
     console.log("Complaints by Borough and Type:");
@@ -242,7 +243,7 @@ const description = body
   .style("color", "white")
   .style("text-align", "center")
   .style("line-height", "1.6") // Increase leading
-  .text("This treemap visualises the number of complaints related to violations of park rules in New York City in 2023. The boroughs are represented by the top-level rectangles, and the complaint types are represented by the smaller rectangles within each borough. The size of each rectangle corresponds to the number of complaints.");
+  .text("This treemap visualises the number of complaints related to violations of park rules in New York City in 2023. The boroughs are represented by the top-level rectangles, and the complaint types are represented by the smaller rectangles within each borough. The size of each rectangle corresponds to the number of complaints."); //tba change to ocean, depth, predator/prey
 
 
  
