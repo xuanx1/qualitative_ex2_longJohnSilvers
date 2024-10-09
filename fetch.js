@@ -1,5 +1,5 @@
 // put your API key here;
-const apiKey = "PU7ZkKg9HqWBxYS6q43M2e1fLhe03LLcuCTRSaPf";  
+const apiKey = "LghpWdrnggg1FDmHsNy6QbLDHVF1avviLG0vyYqF";  
 
 // Access to terms by term category (I.e. online_media_type > Images)
 const termBaseURL = "https://api.si.edu/openaccess/api/v1.0/terms/";
@@ -16,7 +16,7 @@ let linkIDS = '';
 let imageData = {}
 
 //fetch the image info
-fetch('imageLinks.json')
+fetch('imagelinks.json')
   .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
