@@ -1,17 +1,40 @@
 import "./style.css";
 import * as d3 from "d3";
 
+//explained, corrected and refined with vscode copilot
 //tree map, by oceans, depth, predator/prey 
 
 // load depth data
-async function loadData() {
+// function that match "title" from filtered_data_unique.json to common_names_dict.txt and show common names
+async function matchTitlesToCommonNames() {
   try {
-    const response = await fetch('filtered_data_unique.json');
-    const data = await response.json();
-    console.log('Data loaded successfully:', data);
+    const [dataResponse, dictResponse] = await Promise.all([
+      fetch('filtered_data_unique.json'),
+      fetch('common_names_dict.txt')
+    ]);
+
+    const data = await dataResponse.json();
+    const dictText = await dictResponse.text();
+    const commonNamesDict = dictText.split('\n').reduce((acc, line) => {
+      const [title, commonName] = line.split('=');
+      acc[title.trim()] = commonName.trim();
+      return acc;
+    }, {});
+
+    data.forEach(item => {
+      if (commonNamesDict[item.C]) {
+      item.commonName = commonNamesDict[item.C];
+      }
+    });
+
+    console.log('Data with common names:', data);
+    } catch (error) {
+    console.error('Error matching titles to common names:', error);
+    }
+  }
 
 
-//explained, corrected and refined with vscode copilot
+
 
 // Background color for the body
 d3.select("body")
