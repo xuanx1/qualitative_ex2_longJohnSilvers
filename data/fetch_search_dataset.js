@@ -68,6 +68,11 @@ function addObject(objectData) {
   const title =
     objectData.content?.descriptiveNonRepeating?.title?.content ?? 'N/A';
 
+    //
+  const ocean = objectData.content?.freetext?.name?.find(item => item.label === 'Ocean/Sea/Gulf')?.content ?? 'N/A';
+  const depth = objectData.content?.freetext?.physicalDescription?.[0]?.content ?? 'N/A';
+    //
+  
   const tax_class =
     objectData.content?.indexedStructured?.tax_class?.[0] ?? 'N/A';
   const tax_order =
@@ -82,16 +87,42 @@ function addObject(objectData) {
   const continent = geoLocation?.L1?.content ?? 'N/A';
   const country = geoLocation?.L2?.content ?? 'N/A';
   const state = geoLocation?.L3?.content ?? 'N/A';
-  const locality = geoLocation?.Other?.content ?? 'N/A';
+  // const locality = geoLocation?.Other?.content ?? 'N/A';
   const latitude = geoLocation?.points?.point?.latitude?.content ?? 'N/A';
   const longitude = geoLocation?.points?.point?.longitude?.content ?? 'N/A';
 
   const record_link =
     objectData.content?.descriptiveNonRepeating?.record_link ?? 'N/A';
 
+    // remove if ocean is N/A
+    if (ocean === 'N/A') {
+      return;
+    }
+
+    // Convert depth range to integer by choosing a random number within the range
+    let depthValue = 'N/A';
+    if (depth !== 'N/A') {
+      const depthRange = depth.match(/(\d+)-(\d+)/);
+      if (depthRange) {
+        const minDepth = parseInt(depthRange[1], 10);
+        const maxDepth = parseInt(depthRange[2], 10);
+        depthValue = Math.floor(Math.random() * (maxDepth - minDepth + 1)) + minDepth;
+      } else {
+        depthValue = parseInt(depth, 10);
+      }
+    }
+
+    // Remove entries if depth is 0
+    if (depthValue === 0) {
+      return;
+    }
+
+
   myArray.push({
     id: id,
     title: title,
+    ocean: ocean,
+    depth: depthValue,
     tax_class: tax_class,
     tax_order: tax_order,
     tax_family: tax_family,
@@ -100,7 +131,7 @@ function addObject(objectData) {
       continent: continent,
       country: country,
       state: state,
-      locality: locality,
+      // locality: locality,
       latitude: latitude,
       longitude: longitude,
     },

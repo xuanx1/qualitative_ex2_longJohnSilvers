@@ -23,6 +23,21 @@ fs.readFile('data.json', 'utf8', (err, data) => {
         item.title !== undefined &&
         item.title !== '' &&
         item.title !== 'N/A';
+      
+        // 
+      const hasValidOcean =
+        item.ocean !== null &&
+        item.tioceantle !== undefined &&
+        item.ocean !== '' &&
+        item.ocean !== 'N/A';
+
+      const hasValidDepth =
+        item.depth !== null &&
+        item.depth !== undefined &&
+        item.depth !== '' &&
+        item.depth !== 'N/A';
+        // 
+      
       const hasValidTaxClass =
         item.tax_class !== null &&
         item.tax_class !== undefined &&
@@ -58,10 +73,10 @@ fs.readFile('data.json', 'utf8', (err, data) => {
         geoLocation.state !== undefined &&
         geoLocation.state !== '' &&
         geoLocation.state !== 'N/A' &&
-        geoLocation.locality !== null &&
-        geoLocation.locality !== undefined &&
-        geoLocation.locality !== '' &&
-        geoLocation.locality !== 'N/A' &&
+        // geoLocation.locality !== null &&
+        // geoLocation.locality !== undefined &&
+        // geoLocation.locality !== '' &&
+        // geoLocation.locality !== 'N/A' &&
         geoLocation.latitude !== null &&
         geoLocation.latitude !== undefined &&
         geoLocation.latitude !== '' &&
@@ -81,6 +96,8 @@ fs.readFile('data.json', 'utf8', (err, data) => {
       return (
         hasValidId &&
         hasValidTitle &&
+        hasValidOcean &&
+        hasValidDepth &&
         hasValidTaxClass &&
         hasValidTaxOrder &&
         hasValidTaxFamily &&
@@ -89,6 +106,7 @@ fs.readFile('data.json', 'utf8', (err, data) => {
         hasValidRecordLink
       );
     });
+
 
     // duplicate title delete
     const uniqueTitleMap = new Map();
@@ -115,3 +133,6 @@ fs.readFile('data.json', 'utf8', (err, data) => {
     console.error('Error parsing JSON:', parseError);
   }
 });
+
+
+

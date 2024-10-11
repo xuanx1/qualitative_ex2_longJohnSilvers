@@ -1,38 +1,36 @@
-import * as d3 from "d3";
-
 //explained, corrected and refined with vscode copilot
-//tree map, by oceans, depth, predator/prey 
 
-// load depth data
-// function that match "title" from filtered_data_unique.json to common_names_dict.txt and show common names
-import data from "filtered_data_unique.json";
+// tree map, by oceans, depth, predator/prey (archetype)
+// load json 
+// function that match "title" from filtered_data_unique.json to N= (scientific names) in common_names_dict.txt and extract its corresponding C= (common names)
+// create a treemap with the data
 
-async function matchTitlesToCommonNames() {
-  try {
-    const dictResponse = await fetch("common_names_cleaned.txt");
-    if (!dictResponse.ok) {
-      throw new Error(`HTTP error! status: ${dictResponse.status}`);
-    }
-    const dictText = await dictResponse.text();
-    const commonNamesDict = dictText.split('\n').reduce((acc, line) => {
-      const [title, commonName] = line.split('=');
-      acc[title.trim()] = commonName.trim();
-      return acc;
-    }, {});
 
-    data.forEach(item => {
-      if (commonNamesDict[item.C]) {
-        item.commonName = commonNamesDict[item.C];
-      }
-    });
+// async function matchTitlesToCommonNames() {
+//   try {
+//     const dictResponse = await fetch("common_names_cleaned.txt");
+//     if (!dictResponse.ok) {
+//       throw new Error(`HTTP error! status: ${dictResponse.status}`);
+//     }
+//     const dictText = await dictResponse.text();
+//     const commonNamesDict = dictText.split('\n').reduce((acc, line) => {
+//       const [title, commonName] = line.split('=');
+//       acc[title.trim()] = commonName.trim();
+//       return acc;
+//     }, {});
 
-    console.log('Data with common names:', data);
-  } catch (error) {
-    console.error('Error matching titles to common names:', error);
-  }
-}
+//     data.forEach(item => {
+//       if (commonNamesDict[item.C]) {
+//         item.commonName = commonNamesDict[item.C];
+//       }
+//     });
 
-matchTitlesToCommonNames();
+//     console.log('Data with common names:', data);
+//   } catch (error) {
+//     console.error('Error matching titles to common names:', error);
+//   }
+// }
+// matchTitlesToCommonNames();
 
 
 
