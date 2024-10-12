@@ -23,7 +23,7 @@ async function fetchData() {
 
 
 
-    // Group data by borough and complaint types-park rules, the borough is the first level of the hierarchy, and the complaint type is the second level
+    // Group data by ocean and depth, the ocean is the first level of the hierarchy, and the depth type is the second level
     const data = d3.rollup(
       response, 
       v => v.length, 
@@ -126,7 +126,7 @@ async function fetchData() {
     });
 
            
-    // Add Legend for boroughs
+    // Add Legend for oceans
     const legend = body.append("div")
     .attr("class", "legend")
     .style("display", "flex")
@@ -174,7 +174,7 @@ async function fetchData() {
 
     const [x, y] = d3.pointer(event);
 
-    body.append("div") //popup window for complaints info
+    body.append("div") //popup window for Species info
       .attr("class", "tooltip")
       .style("position", "absolute")
       .style("background", "white")
@@ -184,7 +184,7 @@ async function fetchData() {
       .style("opacity", "0.9")
       .style("left", `${event.pageX + 20}px`)
       .style("top", `${event.pageY + 20}px`)
-      .html(`<strong>${d.data[0]}</strong><br/>Complaints: ${d.value}`);
+      .html(`<strong>${d.data[0]}</strong><br/>Species: ${d.value}`);
 })
 .on("mouseout", function() {
   d3.select(this).select("rect")
@@ -202,7 +202,7 @@ const footer = d3.select("body")
   .style("color", "white")
   .style("text-align", "center")
   .style("padding-top", "50px")
-  .text("Data Visualisation & Info Aesthetics | Exercise 2 | Xuan");
+  .text("Major Studio I | Exercise 2: Qualitative Representation | Hyeonjeong | Xuan");
 
   } catch (error) {
     console.error("Error fetching or processing data:", error);
@@ -222,7 +222,7 @@ const title = body
   .style("color", "white")
   .style("text-align", "center")
   .style("padding-bottom", "20px")
-  .text("Types of Park Rule Violation Complaints by Borough in 2023");
+  .text("Helloooo Neighbours...");
 
 // Add fade-in animation for the title
 title.style("opacity", 0)
