@@ -1,36 +1,9 @@
 //explained, corrected and refined with vscode copilot
 
 // tree map, by oceans, depth, predator/prey (archetype)
-// load json 
 // function that match "title" from filtered_data_unique.json to N= (scientific names) in common_names_dict.txt and extract its corresponding C= (common names)
-// create a treemap with the data
+// load json, create a treemap with the data
 
-
-async function matchTitlesToCommonNames() {
-  try {
-    const dictResponse = await fetch("common_names_cleaned.txt");
-    if (!dictResponse.ok) {
-      throw new Error(`HTTP error! status: ${dictResponse.status}`);
-    }
-    const dictText = await dictResponse.text();
-    const commonNamesDict = dictText.split('\n').reduce((acc, line) => {
-      const [title, commonName] = line.split('=');
-      acc[title.trim()] = commonName.trim();
-      return acc;
-    }, {});
-
-    data.forEach(item => {
-      if (commonNamesDict[item.C]) {
-        item.commonName = commonNamesDict[item.C];
-      }
-    });
-
-    console.log('Data with common names:', data);
-  } catch (error) {
-    console.error('Error matching titles to common names:', error);
-  }
-}
-matchTitlesToCommonNames();
 
 
 
@@ -40,18 +13,24 @@ d3.select("body")
 
 async function fetchData() {
   try {
-    const response = await d3.json(url);
+    // Load the data
+    const response = await d3.json("updated_final_copy.json");
+    const predatorOrders = Predator
+    const preyOrders = Prey
+    const leftOrders = Others
+    const archetype = [Predator, Prey, Others]
 
     // Group data by borough and complaint types-park rules, the borough is the first level of the hierarchy, and the complaint type is the second level
     const data = d3.rollup(
       response, 
       v => v.length, 
-      d => d.borough, //ocean
-      d => d.descriptor, //depth
-      d => d.tba //archetype
+      d => d.ocean,
+      d => d.archetype,
+      d => d.depth
+
     );
 
-    console.log("Complaints by Borough and Type:");
+    console.log("Predator/Prey by Oceans and Depths:");
     console.log(data);
 
     
@@ -264,7 +243,7 @@ const description = body
   .style("color", "white")
   .style("text-align", "center")
   .style("line-height", "1.6") // Increase leading
-  .text("This treemap visualises the number of complaints related to violations of park rules in New York City in 2023. The boroughs are represented by the top-level rectangles, and the complaint types are represented by the smaller rectangles within each borough. The size of each rectangle corresponds to the number of complaints."); //tba change to ocean, depth, predator/prey
+  .text("This treemap visualises the number of ----. The oceans are represented by the top-level rectangles, and the acrhetypes types are represented by the smaller rectangles within each ocean. The size of each rectangle corresponds to the number of species."); //tba change to ocean, depth, predator/prey
 
 
  

@@ -23,29 +23,6 @@ fs.readFile('data.json', 'utf8', (err, data) => {
         item.title !== undefined &&
         item.title !== '' &&
         item.title !== 'N/A';
-<<<<<<< HEAD:data/value_filter.js
-=======
-      
-        // 
-      const hasValidOcean =
-        item.ocean !== null &&
-        item.tioceantle !== undefined &&
-        item.ocean !== '' &&
-        item.ocean !== 'N/A';
-
-      const hasValidDepth =
-        item.depth !== null &&
-        item.depth !== undefined &&
-        item.depth !== '' &&
-        item.depth !== 'N/A';
-        // 
-      
-      const hasValidTaxClass =
-        item.tax_class !== null &&
-        item.tax_class !== undefined &&
-        item.tax_class !== '' &&
-        item.tax_class !== 'N/A';
->>>>>>> 260551d7675f98f7f20df9d1e5344972aaed4a16:data/filter1.js
       const hasValidTaxOrder =
         item.tax_order !== null &&
         item.tax_order !== undefined &&
@@ -59,7 +36,6 @@ fs.readFile('data.json', 'utf8', (err, data) => {
 
       const geoLocation = item.geoLocation || {};
       const hasValidGeoLocation =
-<<<<<<< HEAD:data/value_filter.js
         geoLocation.latitude?.content !== null &&
         geoLocation.latitude?.content !== undefined &&
         geoLocation.latitude?.content !== '' &&
@@ -68,7 +44,6 @@ fs.readFile('data.json', 'utf8', (err, data) => {
         geoLocation.longitude?.content !== undefined &&
         geoLocation.longitude?.content !== '' &&
         geoLocation.longitude?.content !== 'N/A';
-=======
         geoLocation.continent !== null &&
         geoLocation.continent !== undefined &&
         geoLocation.continent !== '' &&
@@ -93,7 +68,6 @@ fs.readFile('data.json', 'utf8', (err, data) => {
         geoLocation.longitude !== undefined &&
         geoLocation.longitude !== '' &&
         geoLocation.longitude !== 'N/A';
->>>>>>> 260551d7675f98f7f20df9d1e5344972aaed4a16:data/filter1.js
 
       const hasValidRecordLink =
         item.record_link !== null &&
@@ -122,12 +96,9 @@ fs.readFile('data.json', 'utf8', (err, data) => {
       return (
         hasValidId &&
         hasValidTitle &&
-<<<<<<< HEAD:data/value_filter.js
-=======
         hasValidOcean &&
         hasValidDepth &&
         hasValidTaxClass &&
->>>>>>> 260551d7675f98f7f20df9d1e5344972aaed4a16:data/filter1.js
         hasValidTaxOrder &&
         hasValidTaxFamily &&
         hasValidGeoLocation &&

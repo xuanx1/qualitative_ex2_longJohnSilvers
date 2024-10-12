@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Fish Common Names</title>
+</head>
+<body>
+  <h1>Update Fish Common Names in JSON</h1>
+  <button onclick="updateCommonNames()">Update Common Names</button>
+  <pre id="result"></pre>
+  <a id="downloadLink" style="display:none;">Download Updated JSON</a>
+
+  <script>
+    const fishCommonNamesUrl = 'updated_fish_common_name_list.json';
+    const finalCopyUrl = 'final_copy.json';
+
+    async function updateCommonNames() {
+      try {
+        const [commonNamesRes, finalCopyRes] = await Promise.all([
+          fetch(fishCommonNamesUrl),
+          fetch(finalCopyUrl)
+        ]);
+        
+        const commonNames = await commonNamesRes.json();
+        const finalCopy = await finalCopyRes.json();
+
+        for (let entry of finalCopy) {
+          const scientificName = entry.title;
+          if (commonNames[scientificName]) {
+            entry.common_name = commonNames[scientificName];
+          } else {
+            entry.common_name = scientificName.replace(/_/g, ' ');
+          }
+        }
+
+        document.getElementById('result').textContent = JSON.stringify(finalCopy, null, 2);
+
+        const blob = new Blob([JSON.stringify(finalCopy, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = url;
+        downloadLink.download = 'updated_fish_common_names.json';
+        downloadLink.style.display = 'block';
+
+      } catch (error) {
+        console.error('Error updating common names:', error);
+        document.getElementById('result').textContent = 'Error updating common names: ' + error;
+      }
+    }
+  </script>
+</body>
+</html>
