@@ -5,7 +5,12 @@
 // load json, create a treemap with the data
 
 
+const Predator = predatorOrders
+const Prey = preyOrders
+const Others = leftOrders
+const archetype = [Predator, Prey, Others]
 
+import { predatorOrders, preyOrders, leftOrders } from "./data/group_filter.js";
 
 // Background color for the body
 d3.select("body")
@@ -14,11 +19,9 @@ d3.select("body")
 async function fetchData() {
   try {
     // Load the data
-    const response = await d3.json("updated_final_copy.json");
-    const predatorOrders = Predator
-    const preyOrders = Prey
-    const leftOrders = Others
-    const archetype = [Predator, Prey, Others]
+    const response = await d3.json("./data/[TO_BE_USED]updated_final_copy.json");
+
+
 
     // Group data by borough and complaint types-park rules, the borough is the first level of the hierarchy, and the complaint type is the second level
     const data = d3.rollup(

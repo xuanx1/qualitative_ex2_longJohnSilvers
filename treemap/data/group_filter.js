@@ -1,6 +1,4 @@
-import fs from 'fs';
-
-const predatorOrders = [
+export const predatorOrders = [
   'Etmopteridae',
   'Oxynotidae',
   'Squalidae',
@@ -85,7 +83,7 @@ const predatorOrders = [
   'Trachipteridae',
 ];
 
-const preyOrders = [
+export const preyOrders = [
   'Gobiidae',
   'Mullidae',
   'Apogonidae',
@@ -133,7 +131,7 @@ const preyOrders = [
   'Labridae',
 ];
 
-const leftOrders = [
+export const leftOrders = [
   'Liparidae',
   'Bythitidae',
   'Syngnathidae',
@@ -202,47 +200,3 @@ const leftOrders = [
   'Colocongridae',
   'Evermannellidae',
 ];
-
-// Read the JSON file
-fs.readFile('depth.json', 'utf8', (err, data) => {
-  if (err) {
-    console.error('Error loading JSON:', err);
-    return;
-  }
-
-  try {
-    // Parse the JSON data
-    const jsonData = JSON.parse(data);
-
-    // Add newGroup based on tax_family
-    const updatedData = jsonData.map((item) => {
-      let newGroup = 'Other'; // Default value
-
-      if (predatorOrders.includes(item.tax_family)) {
-        newGroup = 'Predator';
-      } else if (preyOrders.includes(item.tax_family)) {
-        newGroup = 'Prey';
-      } else if (leftOrders.includes(item.tax_family)) {
-        newGroup = 'Others'; // Other category
-      }
-
-      return { ...item, newGroup }; // Add the new field
-    });
-
-    // Save the updated data back to a new JSON file
-    fs.writeFile(
-      'groups.json',
-      JSON.stringify(updatedData, null, 2),
-      (writeErr) => {
-        if (writeErr) {
-          console.error('Error writing updated JSON:', writeErr);
-          return;
-        }
-
-        console.log('JSON file has been successfully updated.');
-      }
-    );
-  } catch (parseError) {
-    console.error('Error parsing JSON:', parseError);
-  }
-});
