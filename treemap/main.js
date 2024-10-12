@@ -4,6 +4,8 @@
 // function that match "title" from filtered_data_unique.json to N= (scientific names) in common_names_dict.txt and extract its corresponding C= (common names)
 // load json, create a treemap with the data
 
+//ADD background fishes swimming
+//ADD animation when zoom in + out
 
 const Predator = predatorOrders
 const Prey = preyOrders
