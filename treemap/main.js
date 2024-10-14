@@ -102,7 +102,7 @@ async function fetchData() {
 
 
 
-    // add title to the treemap
+// treemap title
 const body = d3.select("body").style("padding", "20px");
 
 const title = body
@@ -115,14 +115,14 @@ const title = body
   .style("padding-bottom", "20px")
   .text("Helloooo Neighbours...");
 
-// Add fade-in animation for the title
+// fade-in animation for title
 title.style("opacity", 0)
 .transition()
 .duration(1000)
 .style("opacity", 1);
 
 
-// add description paragraph
+// description paragraph
 const description = body
   .append("div")
   .style("display", "flex")
