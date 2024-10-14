@@ -68,6 +68,15 @@ function animateFish(fish) {
 createSwimmingFish();
 
 
+
+
+// add Function to create a parallelax land with people playing volleyball
+
+
+
+
+
+//rollup
 async function fetchData() {
   try {
     // Load the data
@@ -85,11 +94,57 @@ async function fetchData() {
       return ocean === 'North Sea' ? ocean : ocean + " Ocean";
       },
       d => d.newGroup,
-      // d => d.depth
+      // d => d.depth //to be add during phase 2
     );
 
     console.log("Predator/Prey by Oceans and(phase 2) Depths:");
     console.log(data);
+
+
+
+    // add title to the treemap
+const body = d3.select("body").style("padding", "20px");
+
+const title = body
+  .append("h1")
+  .style("font-size", "32px")
+  .style("font-family", "'Open Sans', sans-serif")
+  .style("font-weight", "regular")
+  .style("color", "#098094")
+  .style("text-align", "center")
+  .style("padding-bottom", "20px")
+  .text("Helloooo Neighbours...");
+
+// Add fade-in animation for the title
+title.style("opacity", 0)
+.transition()
+.duration(1000)
+.style("opacity", 1);
+
+
+// add description paragraph
+const description = body
+  .append("div")
+  .style("display", "flex")
+  .style("justify-content", "center")
+  .style("align-items", "center")
+  .style("padding-bottom", "30px")
+  .append("p")
+  .style("max-width", "600px")
+  .style("font-size", "15px")
+  .style("font-family", "'Open Sans', sans-serif")
+  .style("font-weight", "regular")
+  .style("color", "white")
+  .style("text-align", "center")
+  .style("line-height", "1.6") // Increase leading
+  .html(`This treemap visualises the number of species of fish in each ocean. The oceans are represented by the top-level rectangles, and the archetypes are represented by the smaller rectangles within each ocean. The size of each rectangle corresponds to the number of species based on the total number of fishes in the database, currently totaling at 
+  <strong style="color: #098094;">${response.length}</strong> species.`); //mention predator/prey, add depth in phase 2  + // Big N
+
+// Add fade-in animation for the description
+description.style("opacity", 0)
+.transition()
+.duration(1000)
+.style("opacity", 1);
 
     
     // Convert the data to a hierarchical format
@@ -260,7 +315,7 @@ const footer = d3.select("body")
   .append("footer")
   .style("font-size", "12px")
   .style("font-family", "'Open Sans', sans-serif")
-  .style("font-weight", "bold")
+  .style("font-weight", "regular")
   .style("color", "white")
   .style("text-align", "center")
   .style("padding-top", "50px")
@@ -272,46 +327,3 @@ const footer = d3.select("body")
 }
 
 fetchData();
-
-// add title to the treemap
-const body = d3.select("body").style("padding", "20px");
-
-const title = body
-  .append("h1")
-  .style("font-size", "32px")
-  .style("font-family", "'Open Sans', sans-serif")
-  .style("font-weight", "regular")
-  .style("color", "white")
-  .style("text-align", "center")
-  .style("padding-bottom", "20px")
-  .text("Helloooo Neighbours...");
-
-// Add fade-in animation for the title
-title.style("opacity", 0)
-.transition()
-.duration(1000)
-.style("opacity", 1);
-
-// add description paragraph
-const description = body
-  .append("div")
-  .style("display", "flex")
-  .style("justify-content", "center")
-  .style("align-items", "center")
-  .style("padding-bottom", "30px")
-  .append("p")
-  .style("max-width", "600px")
-  .style("font-size", "15px")
-  .style("font-family", "'Open Sans', sans-serif")
-  .style("font-weight", "regular")
-  .style("color", "white")
-  .style("text-align", "center")
-  .style("line-height", "1.6") // Increase leading
-  .text(`This treemap visualises the number of species of fish in each ocean. The oceans are represented by the top-level rectangles, and the archetypes are represented by the smaller rectangles within each ocean. The size of each rectangle corresponds to the number of species based on the total number of fishes in the database, currently totaling at _____ species.`); //mention predator/prey, add depth in phase 2  (${response.length} entries) nig N
-
-
-// Add fade-in animation for the description
-description.style("opacity", 0)
-.transition()
-.duration(1000)
-.style("opacity", 1);
