@@ -4,7 +4,7 @@
 // function that match "title" from filtered_data_unique.json to N= (scientific names) in common_names_dict.txt and extract its corresponding C= (common names)
 // load json, create a treemap with the data
 
-//ADD background fishes swimming
+//ADD background fishes swimming + add intro page at the top to scroll (prompt animation) down to the treemap
 //ADD animation when zoom in + out
 
 const Predator = predatorOrders
@@ -29,13 +29,17 @@ async function fetchData() {
     const data = d3.rollup(
       response, 
       v => v.length, 
-      d => d.ocean,
-      d => d.archetype,
-      d => d.depth
-
+      d => {
+      let ocean = d.ocean.split(' ')[0].replace(/,/g, '');
+      if (ocean === 'South') ocean = 'Southern';
+      if (ocean === 'North') ocean = 'North Sea';
+      return ocean === 'North Sea' ? ocean : ocean + " Ocean";
+      },
+      d => d.newGroup,
+      // d => d.depth
     );
 
-    console.log("Predator/Prey by Oceans and Depths:");
+    console.log("Predator/Prey by Oceans and(phase 2) Depths:");
     console.log(data);
 
     
@@ -52,8 +56,7 @@ async function fetchData() {
     // Create the treemap layout
     const treemapLayout = d3.treemap()
       .size([width - margin.left - margin.right, height - margin.top - margin.bottom])
-      .padding(1);
-
+      .padding(2.5); // Adjust the padding between the nodes
       
     // Update the size of the SVG element
     const svg = d3.select("body")
@@ -96,7 +99,7 @@ async function fetchData() {
 
     // Define colourScale
     const colourScale = d3.scaleOrdinal()
-    .domain(["BRONX", "BROOKLYN", "MANHATTAN", "QUEENS", "STATEN ISLAND", "Unspecified"])
+    .domain(["Pacific", "Atlantic", "Indian", "South", "North", "Arctic"])
     .range(["#fec76f", "#f5945c", "#b3be62", "#6dbfb8", "#be95be", "#72757c"]);
     
     // Append a rectangle for each node
@@ -107,7 +110,7 @@ async function fetchData() {
         const parentColor = colourScale(d.parent.data[0]);
         const shade = d3.scaleLinear()
           .domain([0, d.parent.children.length - 1])
-          .range([0.1, 3]);
+          .range([0.1, 0.9]); // Adjust the range to change the darkness of the shade
         return d3.color(parentColor).darker(shade(d.parent.children.indexOf(d)));
       });
 
@@ -135,19 +138,19 @@ async function fetchData() {
     .style("justify-content", "center")
     .style("margin-top", "5px");
 
-    // Sort boroughs by total complaints in descending order
-    const boroughs = Array.from(data.entries())
+    // Sort oceans by no. of species in descending order
+    const ocean = Array.from(data.entries())
       .sort((a, b) => d3.sum(b[1].values()) - d3.sum(a[1].values()))
       .map(d => d[0]);
 
     const legendItems = legend.selectAll(".legend-item")
-    .data(boroughs)
+    .data(ocean)
     .enter()
     .append("div")
     .attr("class", "legend-item")
     .style("display", "flex")
     .style("align-items", "center")
-    .style("margin-right", (d, i) => i === boroughs.length - 1 ? "0px" : "40px");
+    .style("margin-right", (d, i) => i === ocean.length - 1 ? "0px" : "40px");
 
     // Add fade-in animation for the legend itsems
     legendItems.style("opacity", 0)
@@ -168,17 +171,20 @@ async function fetchData() {
     .style("color", "white")
     .text(d => d);
   
-    // Add hover effect to display number of complaints
+    // Add hover effect to display number of species
     nodes.on("mouseover", function(event, d) {
     d3.select(this).select("rect")
     .attr("stroke", "#ac513b")
-    .attr("stroke-width", 3);
+    .attr("stroke-width", 4);
 
     const [x, y] = d3.pointer(event);
 
     body.append("div") //popup window for Species info
       .attr("class", "tooltip")
       .style("position", "absolute")
+      .style("font-size", "16px")
+      .style("font-family", "'Open Sans', sans-serif")
+      .style("font-weight", "regular")
       .style("background", "white")
       .style("border", "2px solid #72757c")
       .style("padding", "10px")
@@ -186,7 +192,9 @@ async function fetchData() {
       .style("opacity", "0.9")
       .style("left", `${event.pageX + 20}px`)
       .style("top", `${event.pageY + 20}px`)
-      .html(`<strong>${d.data[0]}</strong><br/>Species: ${d.value}`);
+      .html(`<strong>${d.data[0]}</strong>
+        <br/>Ratio - add meter
+        <br/>Population: ${d.value}`);
 })
 .on("mouseout", function() {
   d3.select(this).select("rect")
@@ -248,6 +256,5 @@ const description = body
   .style("color", "white")
   .style("text-align", "center")
   .style("line-height", "1.6") // Increase leading
-  .text("This treemap visualises the number of ----. The oceans are represented by the top-level rectangles, and the acrhetypes types are represented by the smaller rectangles within each ocean. The size of each rectangle corresponds to the number of species."); //tba change to ocean, depth, predator/prey
-
+  .text("This treemap visualises the number of species of fishes in each ocean. The oceans are represented by the top-level rectangles, and the acrhetypes types are represented by the smaller rectangles within each ocean. The size of each rectangle corresponds to the number of species."); //mention predator/prey, add depth in phase 2 
 
