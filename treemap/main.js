@@ -71,8 +71,8 @@ const legendDepth = {
   gradientBar: {
     x: 40,
     y: 10,
-    width: 20,
-    height: 100,
+    width: 15,
+    height: 80,
     colorStart: "#ff9966",
     colorEnd: "#4d2600"
   }
@@ -142,9 +142,9 @@ svgDepth.append("rect")
 // species population size
 const legendSize = {
   squares: [
-    { x: 10, y: 10, size: 80, color: "#4d2600" },
-    { x: 20, y: 20, size: 60, color: "#804000" },
-    { x: 30, y: 30, size: 40, color: "#ff9966" }
+    { x: 10, y: 10, size: 80, color: "#ec8f59" },
+    { x: 10, y: 30, size: 60, color: "#955a38" },
+    { x: 10, y: 50, size: 40, color: "#5e3923" }
   ],
   draw: function(svg) {
     svg.selectAll("rect")
@@ -172,20 +172,20 @@ const legendSize = {
           .style("opacity", "0.9")
           .style("left", `${x + 20}px`)
           .style("top", `${y + 20}px`)
-          .html(`<strong>Size</strong><br/>The larger the cube,<br/>the greater the volume of species.`);
+          .html(`<strong>Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`);
       })
       .on("mouseout", function() {
         d3.select(".tooltip-size").remove();
       });
 
     svg.append("line")
-      .attr("x1", 70)
-      .attr("y1", 10)
+      .attr("x1", 50)
+      .attr("y1", 50)
       .attr("x2", 90)
-      .attr("y2", 30)
+      .attr("y2", 10)
       .attr("stroke", "white")
-      .attr("stroke-width", 2)
-      .attr("stroke-dasharray", "4 2");
+      .attr("stroke-width", 1)
+      .attr("stroke-dasharray", "4 6");
   }
 };
 
