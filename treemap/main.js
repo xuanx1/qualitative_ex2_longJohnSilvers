@@ -926,6 +926,49 @@ const speciesVolumeTitle = d3.select("body").append("div")
 }
 
 
+
+// // Add hover effect to show each fish's description
+// svgDepth.append("rect")
+//   .attr("x", legendDepth.gradientBar.x)
+//   .attr("y", legendDepth.gradientBar.y)
+//   .attr("width", legendDepth.gradientBar.width)
+//   .attr("height", legendDepth.gradientBar.height)
+//   .attr("fill", "transparent")
+//   .style("cursor", "pointer")
+//   .on("mouseover", function(event) {
+//     const [x, y] = d3.pointer(event);
+
+//     d3.select("body").append("div")
+//       .attr("class", "tooltip-depth")
+//       .style("position", "absolute")
+//       .style("font-size", "14px")
+//       .style("font-family", "'Open Sans', sans-serif")
+//       .style("font-weight", "regular")
+//       .style("background", "white")
+//       .style("border", "1.5px solid #72757c")
+//       .style("padding", "10px")
+//       .style("pointer-events", "none")
+//       .style("opacity", "0.9")
+//       .style("border-radius", "10px") // radius
+//       .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
+//       .style("left", `${x + 20}px`)
+//       .style("top", `${y - 20}px`)
+//       .html(`
+//         <strong style="color: #098094;">Name: </strong> ${d.common_name}
+//         <br/>
+//         <strong style="color: #098094;">Archetype: </strong> ${d.newGroup}
+//         <br/>
+//         <strong style="color: #098094;">Ocean: </strong> ${d.ocean}
+//         <br/>
+//         <strong style="color: #098094;">Depth: </strong> ${d.depth}
+//         <br/>`)
+//       .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`); //fetch img thumbnail
+//     })
+//     .on("mouseout", function() {
+//     d3.select(".tooltip-depth").remove();
+//   });
+
+
 // Add blur filter to SVG
 svg.append("defs")
   .append("filter")
