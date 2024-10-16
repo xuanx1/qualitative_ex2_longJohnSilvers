@@ -4,8 +4,14 @@
 // function that match "title" from filtered_data_unique.json to N= (scientific names) in common_names_dict.txt and extract its corresponding C= (common names)
 // load json, create a treemap with the data
 
-//ADD background fishes swimming + add intro page at the top to scroll (prompt animation) down to the treemap
-//ADD animation when zoom in + out
+
+//ADD:
+//background fishes swimming + add intro page at the top to scroll (prompt animation) down to the treemap
+//animation when zoom in + out
+
+//div for intro; function to create a parallelax land with people playing volleyball
+    // apply function createSwimmingFish() inside rectangle nodes, but in front of the treemap; Add some graphics overlay the rectangle nodes
+
 
 const Predator = predatorOrders
 const Prey = preyOrders
@@ -13,6 +19,55 @@ const Others = leftOrders
 const archetype = [Predator, Prey, Others]
 
 import { predatorOrders, preyOrders, leftOrders } from "./data/group_filter.js";
+
+// Insert loading screen
+const loadingScreen = d3.select("body")
+  .append("div")
+  .attr("class", "loading-screen")
+  .style("position", "fixed")
+  .style("top", 0)
+  .style("left", 0)
+  .style("width", "100%")
+  .style("height", "100%")
+  .style("background", "#373737")
+  .style("display", "flex")
+  .style("justify-content", "center")
+  .style("align-items", "center")
+  .style("z-index", 1000);
+
+// Add text clipping mask and loading wave animation
+const waveText = loadingScreen.append("div")
+  .style("color", "white")
+  .style("font-size", "18px")
+  .style("font-family", "'Open Sans', sans-serif")
+  .style("font-weight", "regular")
+  .style("position", "relative")
+  .style("overflow", "hidden")
+  .style("width", "200px")
+  .style("height", "50px")
+  .style("text-align", "center")
+  .style("line-height", "50px")
+  .style("padding", "10px")
+  .text("Assembling the Sea");
+
+const wave = waveText.append("div")
+  .style("position", "absolute")
+  .style("top", "0")
+  .style("left", "-200px")
+  .style("width", "200px")
+  .style("height", "6px")
+  .style("background", "linear-gradient(to right, #00c6ff 0%, rgba(255, 255, 255, 0.2) 50%, #0072ff 100%)")
+  .style("border-radius", "10px") // Add rounded edges
+  .style("animation", "wave 2s infinite");
+
+d3.select("head").append("style").text(`
+  @keyframes wave {
+    0% { left: -200px; }
+    50% { left: 100px; }
+    100% { left: -200px; }
+  }
+`);
+
 
 
 // Background color for the body - to add "landing page" + prompt to scroll down + parallelax land with people playing volleyball
@@ -70,14 +125,16 @@ createSwimmingFish();
 
 
 
-// add Function to create a parallelax land with people playing volleyball
 
-
-
-
-
-//rollup
+// Remove loading screen 2s after data is fetched, then rollup
 async function fetchData() {
+  setTimeout(() => {
+    loadingScreen.transition()
+      .duration(800)
+      .style("opacity", 0)
+      .remove();
+  }, 2000);
+}; {
   try {
     // Load the data
     const response = await d3.json("./data/[TO_BE_USED]updated_final_copy.json");
@@ -94,7 +151,7 @@ async function fetchData() {
       return ocean === 'North Sea' ? ocean : ocean + " Ocean";
       },
       d => d.newGroup,
-      // d => d.depth //to be add during phase 2
+      //d => d.depth //to be add during phase 2
     );
 
     console.log("Predator/Prey by Oceans and(phase 2) Depths:");
@@ -130,7 +187,7 @@ const description = body
   .style("align-items", "center")
   .style("padding-bottom", "30px")
   .append("p")
-  .style("max-width", "600px")
+  .style("max-width", "700px")
   .style("font-size", "15px")
   .style("font-family", "'Open Sans', sans-serif")
   .style("font-weight", "regular")
@@ -218,6 +275,8 @@ description.style("opacity", 0)
         return d3.color(parentColor).darker(shade(d.parent.children.indexOf(d)));
       });
 
+  
+    
     // Append text labels
     nodes.append("text")
       .attr("x", 10)
@@ -236,8 +295,9 @@ description.style("opacity", 0)
           d3.select(this).remove();
         }
       });
-
-           
+    
+    
+    
     // Add Legend for oceans
     const legend = body.append("div")
     .attr("class", "legend")
@@ -278,37 +338,189 @@ description.style("opacity", 0)
     .style("color", "white")
     .text(d => d);
   
-    // Add hover effect to display number of species
+    // Add hover effect to display total number + proportion of species
     nodes.on("mouseover", function(event, d) {
-    d3.select(this).select("rect")
-    .attr("stroke", "#ac513b")
-    .attr("stroke-width", 4);
+      d3.select(this).select("rect")
+        .attr("stroke", "#ac513b")
+        .attr("stroke-width", 4);
 
-    const [x, y] = d3.pointer(event);
+      const [x, y] = d3.pointer(event);
 
-    body.append("div") //popup window for Species info
-      .attr("class", "tooltip")
-      .style("position", "absolute")
-      .style("font-size", "16px")
-      .style("font-family", "'Open Sans', sans-serif")
-      .style("font-weight", "regular")
-      .style("background", "white")
-      .style("border", "2px solid #72757c")
-      .style("padding", "10px")
-      .style("pointer-events", "none")
-      .style("opacity", "0.9")
-      .style("left", `${event.pageX + 20}px`)
-      .style("top", `${event.pageY + 20}px`)
-      .html(`<strong>${d.data[0]}</strong>
-        <br/>Ratio - add meter
-        <br/>Population: ${d.value}`);
-})
-.on("mouseout", function() {
-  d3.select(this).select("rect")
-    .attr("stroke", "none");
+      body.append("div") //popup window for Species info
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("font-size", "16px")
+        .style("font-family", "'Open Sans', sans-serif")
+        .style("font-weight", "regular")
+        .style("background", "white")
+        .style("border", "2px solid #72757c")
+        .style("padding", "10px")
+        .style("pointer-events", "none")
+        .style("opacity", "0.9")
+        .style("left", `${event.pageX + 20}px`)
+        .style("top", `${event.pageY + 20}px`)
+        .html(`<strong>${d.data[0]}</strong>
+          <br/>Proportion: ${Math.round(d.value / d.parent.value * 100)}%
+          <br/>Total Species: ${d.value}`);
+    })
+    .on("mouseout", function() {
+      d3.select(this).select("rect")
+        .attr("stroke", "none");
 
-  body.select(".tooltip").remove();
+      body.select(".tooltip").remove();
+    });
+
+
+
+    // click onto the treemap to zoom in and out, when zoomed in, the treemap will be centered on the clicked node, with the rest gaussian blurred. The clicked node will be the new root of the treemap, adding a new d => d.depth. The other nodes will be transitioned to their new positions, when zoomed out, the treemap will return to its original state.
+
+function zoom(d, width, height, margin, svg, nodes) {
+  console.log("Zoom function called with node:", d);
+
+  const root = d3.hierarchy(d.data[0], ([, value]) => value)
+    .sum(([, value]) => value)
+    .sort((a, b) => b.value - a.value);
+
+  const newTreemapLayout = d3.treemap()
+    .size([width - margin.left - margin.right, height - margin.top - margin.bottom])
+    .padding(2.5);
+
+  newTreemapLayout(root);
+
+  const t = svg.transition().duration(750);
+
+  nodes.transition(t)
+    .attr("transform", d => `translate(${d.x0},${d.y0})`)
+    .select("rect")
+    .attr("width", d => d.x1 - d.x0)
+    .attr("height", d => d.y1 - d.y0);
+
+  // Zoom into the clicked node to fill the page
+  svg.transition(t)
+    .attr("viewBox", `${d.x0 - 50} ${d.y0 - 50} ${d.x1 - d.x0 + 100} ${d.y1 - d.y0 + 100}`)
+
+
+
+  nodes.select("text")
+    .transition(t)
+    .attr("x", 10)
+    .attr("y", 25)
+    .style("font-size", d => {
+      const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+      return fontSize < 10 ? "0px" : `${fontSize}px`;
+    });
+
+
+
+  //legend disappear when zoom in
+  legend.transition().duration(750).style("opacity", 0);
+
+
+
+  //insert special legend when zoomed in and hide when zoom out, The clicked node will be the new root of the treemap, adding a new d => d.depth.
+
+
+
+  // Apply Gaussian blur and darken to non-focused nodes
+  nodes.filter(node => node !== d)
+    .select("rect")
+    .style("filter", "url(#blur)")
+    .style("opacity", 0.5); // Darken non-focused nodes
+
+  // Remove blur and darkening from focused node
+  nodes.filter(node => node === d)
+    .select("rect")
+    .style("filter", "none")
+    .style("opacity", 1); // Return to normal opacity
+
+  // blur and darken focused labels
+  nodes.filter(node => node !== d)
+    .select("text")
+    .style("filter", "url(#blur)")
+    .style("opacity", 0.5); // Darken non-focused labels
+
+  // Remove blur and darkening from focused labels
+  nodes.filter(node => node === d)
+    .select("text")
+    .style("filter", "none")
+    .style("opacity", 1); // Return to normal opacity
+    
+
+  // Unblur and undarken all nodes when zooming out
+  d3.select("body").on("click", function(event) {
+    if (!event.target.closest("svg")) {
+      svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
+      nodes.transition().duration(750)
+        .attr("transform", d => `translate(${d.x0},${d.y0})`)
+        .select("rect")
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0)
+        .style("filter", "none")
+        .style("opacity", 1); // Return to normal opacity
+
+      nodes.select("text")
+        .transition().duration(750)
+        .attr("x", 10)
+        .attr("y", 25)
+        .style("font-size", d => {
+          const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+          return fontSize < 10 ? "0px" : `${fontSize}px`;
+        })
+        .style("filter", "none")
+        .style("opacity", 1) // Return to normal opacity
+        .text(d => d.data[0]);
+
+
+      //legend return when exit treemap
+      legend.transition().duration(750).style("opacity", 1);
+
+    }
+  });
+
+  
+  // Add depth to focused node + hover info + frangment animation for depth
+  d3.select(this).select("text")
+    .text(d => `${d.data[0]} (Depth: ${d.depth})`);
+}
+
+// Add blur filter to SVG
+svg.append("defs")
+  .append("filter")
+  .attr("id", "blur")
+  .append("feGaussianBlur")
+  .attr("stdDeviation", 2);
+
+// Add zoom event listener to nodes
+nodes.on("click", function(event, d) {
+  console.log("Node clicked:", d);
+  zoom(d, width, height, margin, svg, nodes);
 });
+
+// Add click event listener to exit zoom when clicking outside the treemap
+d3.select("body").on("click", function(event) {
+  if (!event.target.closest("svg")) {
+    svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
+    nodes.transition().duration(750)
+      .attr("transform", d => `translate(${d.x0},${d.y0})`)
+      .select("rect")
+      .attr("width", d => d.x1 - d.x0)
+      .attr("height", d => d.y1 - d.y0)
+      .style("filter", "none");
+
+    nodes.select("text")
+      .transition().duration(750)
+      .attr("x", 10)
+      .attr("y", 25)
+      .style("font-size", d => {
+        const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+        return fontSize < 10 ? "0px" : `${fontSize}px`;
+      })
+      .text(d => d.data[0]);
+  }
+});
+
+
+
 
 // add footer + name
 const footer = d3.select("body")
@@ -327,3 +539,6 @@ const footer = d3.select("body")
 }
 
 fetchData();
+
+
+
