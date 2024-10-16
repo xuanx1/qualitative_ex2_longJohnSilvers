@@ -505,9 +505,15 @@ description.style("opacity", 0)
         .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // Add drop shadow
         .style("left", `${event.pageX + 20}px`)
         .style("top", `${event.pageY + 20}px`)
-        .html(`<strong style="color: #098094;">${d.data[0]}</strong>
-          <br/>Proportion: <strong style="color: #098094;">${Math.round(d.value / d.parent.value * 100)}%</strong>
-          <br/>Total Species: <strong style="color: #098094;">${d.value}</strong>`);
+        .html(`
+          <strong style="color: #098094;">${d.data[0]}</strong>
+          <br/>Ocean: <strong style="color: #098094;">${d.parent.data[0]}</strong>
+          <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(d.value / d.parent.value * 100)}%</strong>
+          <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
+        <div style="width: ${Math.round(d.value / d.parent.value * 100)}%; background: #098094; height: 10px; border-radius: 5px;"></div>
+          </div>
+          <br/>Species Count: <strong style="color: #098094;">${d.value}</strong>
+        `);
     })
     .on("mouseout", function() {
       d3.select(this).select("rect")
