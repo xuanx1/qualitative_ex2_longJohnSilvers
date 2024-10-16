@@ -65,141 +65,6 @@ d3.select("head").append("style").text(`
 
 
 
-//Secondary Legend --------------------------------------------
-//Depth
-const legendDepth = {
-  gradientBar: {
-    x: 40,
-    y: 10,
-    width: 15,
-    height: 80,
-    colorStart: "#ff9966",
-    colorEnd: "#4d2600"
-  }
-};
-
-const svgDepth = d3.select("body")
-  .append("svg")
-  .attr("width", 100)
-  .attr("height", 300)
-  .style("background-color", "transparent");
-
-const gradient = svgDepth.append("defs")
-  .append("linearGradient")
-  .attr("id", "gradientBar")
-  .attr("x1", "0%")
-  .attr("y1", "0%")
-  .attr("x2", "0%")
-  .attr("y2", "100%");
-
-gradient.append("stop")
-  .attr("offset", "0%")
-  .attr("stop-color", legendDepth.gradientBar.colorStart);
-
-gradient.append("stop")
-  .attr("offset", "100%")
-  .attr("stop-color", legendDepth.gradientBar.colorEnd);
-
-svgDepth.append("rect")
-  .attr("x", legendDepth.gradientBar.x)
-  .attr("y", legendDepth.gradientBar.y)
-  .attr("width", legendDepth.gradientBar.width)
-  .attr("height", legendDepth.gradientBar.height)
-  .attr("fill", "url(#gradientBar)");
-
-// Add hover effect for elaborate info
-svgDepth.append("rect")
-  .attr("x", legendDepth.gradientBar.x)
-  .attr("y", legendDepth.gradientBar.y)
-  .attr("width", legendDepth.gradientBar.width)
-  .attr("height", legendDepth.gradientBar.height)
-  .attr("fill", "transparent")
-  .style("cursor", "pointer")
-  .on("mouseover", function(event) {
-    const [x, y] = d3.pointer(event);
-
-    d3.select("body").append("div")
-      .attr("class", "tooltip-depth")
-      .style("position", "absolute")
-      .style("font-size", "14px")
-      .style("font-family", "'Open Sans', sans-serif")
-      .style("font-weight", "regular")
-      .style("background", "white")
-      .style("border", "2px solid #72757c")
-      .style("padding", "10px")
-      .style("pointer-events", "none")
-      .style("opacity", "0.9")
-      .style("left", `${x + 20}px`)
-      .style("top", `${y + 20}px`)
-      .html(`<strong>Depth</strong><br/>The darker the shade,<br/>the greater the depth.<br/>*Cube within 20m intervals/bands.`);
-  })
-  .on("mouseout", function() {
-    d3.select(".tooltip-depth").remove();
-  });
-
-
-  
-// species population size
-const legendSize = {
-  squares: [
-    { x: 10, y: 10, size: 80, color: "#ec8f59" },
-    { x: 10, y: 30, size: 60, color: "#955a38" },
-    { x: 10, y: 50, size: 40, color: "#5e3923" }
-  ],
-  draw: function(svg) {
-    svg.selectAll("rect")
-      .data(this.squares)
-      .enter()
-      .append("rect")
-      .attr("x", d => d.x)
-      .attr("y", d => d.y)
-      .attr("width", d => d.size)
-      .attr("height", d => d.size)
-      .attr("fill", d => d.color)
-      .on("mouseover", function(event, d) {
-        const [x, y] = d3.pointer(event);
-
-        d3.select("body").append("div")
-          .attr("class", "tooltip-size")
-          .style("position", "absolute")
-          .style("font-size", "14px")
-          .style("font-family", "'Open Sans', sans-serif")
-          .style("font-weight", "regular")
-          .style("background", "white")
-          .style("border", "2px solid #72757c")
-          .style("padding", "10px")
-          .style("pointer-events", "none")
-          .style("opacity", "0.9")
-          .style("left", `${x + 20}px`)
-          .style("top", `${y + 20}px`)
-          .html(`<strong>Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`);
-      })
-      .on("mouseout", function() {
-        d3.select(".tooltip-size").remove();
-      });
-
-    svg.append("line")
-      .attr("x1", 50)
-      .attr("y1", 50)
-      .attr("x2", 90)
-      .attr("y2", 10)
-      .attr("stroke", "white")
-      .attr("stroke-width", 1)
-      .attr("stroke-dasharray", "4 6");
-  }
-};
-
-const svgSize = d3.select("body")
-  .append("svg")
-  .attr("width", 100)
-  .attr("height", 100)
-  .style("background-color", "transparent");
-
-legendSize.draw(svgSize);
-//--------------------------------------------
-
-
-
 // Background color for the body - to add "landing page" + prompt to scroll down + parallelax land with people playing volleyball --------------------------------------------
 d3.select("body")
   .style("background", "linear-gradient(to bottom, #a8a4a3 20%, #555861 90%)");
@@ -645,8 +510,138 @@ function zoom(d, width, height, margin, svg, nodes) {
   description.transition().duration(750).style("opacity", 0);
 
 
-  //insert special legend when zoomed in and hide when zoom out
-  
+
+//secondary legend legendSize, legendDepth when zoomed in and hide when zoom out
+// Secondary Legend --------------------------------------------
+// Depth
+const legendDepth = {
+  gradientBar: {
+    x: 40,
+    y: 10,
+    width: 15,
+    height: 80,
+    colorStart: "#ff9966",
+    colorEnd: "#4d2600"
+  }
+};
+
+const svgDepth = d3.select("body")
+  .append("svg")
+  .attr("width", 100)
+  .attr("height", 300)
+  .style("background-color", "transparent");
+
+const gradient = svgDepth.append("defs")
+  .append("linearGradient")
+  .attr("id", "gradientBar")
+  .attr("x1", "0%")
+  .attr("y1", "0%")
+  .attr("x2", "0%")
+  .attr("y2", "100%");
+
+gradient.append("stop")
+  .attr("offset", "0%")
+  .attr("stop-color", legendDepth.gradientBar.colorStart);
+
+gradient.append("stop")
+  .attr("offset", "100%")
+  .attr("stop-color", legendDepth.gradientBar.colorEnd);
+
+svgDepth.append("rect")
+  .attr("x", legendDepth.gradientBar.x)
+  .attr("y", legendDepth.gradientBar.y)
+  .attr("width", legendDepth.gradientBar.width)
+  .attr("height", legendDepth.gradientBar.height)
+  .attr("fill", "url(#gradientBar)");
+
+// Add hover effect for elaborate info
+svgDepth.append("rect")
+  .attr("x", legendDepth.gradientBar.x)
+  .attr("y", legendDepth.gradientBar.y)
+  .attr("width", legendDepth.gradientBar.width)
+  .attr("height", legendDepth.gradientBar.height)
+  .attr("fill", "transparent")
+  .style("cursor", "pointer")
+  .on("mouseover", function(event) {
+    const [x, y] = d3.pointer(event);
+
+    d3.select("body").append("div")
+      .attr("class", "tooltip-depth")
+      .style("position", "absolute")
+      .style("font-size", "14px")
+      .style("font-family", "'Open Sans', sans-serif")
+      .style("font-weight", "regular")
+      .style("background", "white")
+      .style("border", "2px solid #72757c")
+      .style("padding", "10px")
+      .style("pointer-events", "none")
+      .style("opacity", "0.9")
+      .style("left", `${x + 20}px`)
+      .style("top", `${y + 20}px`)
+      .html(`<strong>Depth</strong><br/>The darker the shade,<br/>the greater the depth.<br/>*Cube within 20m intervals/bands.`);
+  })
+  .on("mouseout", function() {
+    d3.select(".tooltip-depth").remove();
+  });
+
+// Species population size
+const legendSize = {
+  squares: [
+    { x: 10, y: 10, size: 80, color: "#ec8f59" },
+    { x: 10, y: 30, size: 60, color: "#955a38" },
+    { x: 10, y: 50, size: 40, color: "#5e3923" }
+  ],
+  draw: function(svg) {
+    svg.selectAll("rect")
+      .data(this.squares)
+      .enter()
+      .append("rect")
+      .attr("x", d => d.x)
+      .attr("y", d => d.y)
+      .attr("width", d => d.size)
+      .attr("height", d => d.size)
+      .attr("fill", d => d.color)
+      .on("mouseover", function(event, d) {
+        const [x, y] = d3.pointer(event);
+
+        d3.select("body").append("div")
+          .attr("class", "tooltip-size")
+          .style("position", "absolute")
+          .style("font-size", "14px")
+          .style("font-family", "'Open Sans', sans-serif")
+          .style("font-weight", "regular")
+          .style("background", "white")
+          .style("border", "2px solid #72757c")
+          .style("padding", "10px")
+          .style("pointer-events", "none")
+          .style("opacity", "0.9")
+          .style("left", `${x + 20}px`)
+          .style("top", `${y + 20}px`)
+          .html(`<strong>Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`);
+      })
+      .on("mouseout", function() {
+        d3.select(".tooltip-size").remove();
+      });
+
+    svg.append("line")
+      .attr("x1", 50)
+      .attr("y1", 50)
+      .attr("x2", 90)
+      .attr("y2", 10)
+      .attr("stroke", "white")
+      .attr("stroke-width", 1)
+      .attr("stroke-dasharray", "4 6");
+  }
+};
+
+const svgSize = d3.select("body")
+  .append("svg")
+  .attr("width", 100)
+  .attr("height", 100)
+  .style("background-color", "transparent");
+
+legendSize.draw(svgSize);
+//--------------------------------------------
 
 
 
@@ -706,6 +701,10 @@ function zoom(d, width, height, margin, svg, nodes) {
 
       //tree map description return when exit treemap
     description.transition().duration(750).style("opacity", 1);
+
+    // Remove secondary legend when zoomed out
+    svgSize.remove();
+    svgDepth.remove();
 
     }
   });
