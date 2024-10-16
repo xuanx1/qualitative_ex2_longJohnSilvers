@@ -72,7 +72,7 @@ d3.select("head").append("style").text(`
 
 // Background color for the body - to add "landing page" + prompt to scroll down + parallelax land with people playing volleyball
 d3.select("body")
-  .style("background", "linear-gradient(to bottom, #aba398 20%, #555861 80%)");
+  .style("background", "linear-gradient(to bottom, #c3beba 20%, #555861 80%)");
 
 const possiblePaths = [
   `https://github.com/user-attachments/assets/cd20375b-6246-4af2-ac05-82a7c6d82719`,
@@ -337,6 +337,100 @@ description.style("opacity", 0)
     .style("font-weight", "regular")
     .style("color", "white")
     .text(d => d);
+
+    
+    // hover effect for legend to highlight the corresponding ocean
+    legendItems.on("mouseover", function(event, d) {
+      // Highlight the corresponding ocean nodes
+      nodes.filter(node => node.parent.data[0] === d)
+      .select("rect")
+      .attr("stroke", "#0072ff")    //#00c6ff / #0072ff 
+      .attr("stroke-width", 4);
+
+      // Highlight the legend item
+      d3.select(this)
+      .style("font-weight", "bold")
+      .style("color", "#0072ff");    //#00c6ff / #0072ff 
+
+    
+    const oceans = [
+      {
+      name: "Pacific Ocean",
+      area: "63.8 million mi² (165.25 million km²)",
+      depth: "14,040 ft (4,280 m)",
+      description: "The Pacific Ocean is the largest and deepest of Earth's oceanic divisions."
+      },
+      {
+      name: "Atlantic Ocean",
+      area: "41.1 million mi² (106.46 million km²)",
+      depth: "12,080 ft (3,682 m)",
+      description: "The Atlantic Ocean is the second-largest of the world's oceans."
+      },
+      {
+      name: "Indian Ocean",
+      area: "27.2 million mi² (70.56 million km²)",
+      depth: "12,990 ft (3,960 m)",
+      description: "The Indian Ocean is the third-largest of the world's oceanic divisions."
+      },
+      {
+      name: "Southern Ocean",
+      area: "7.8 million mi² (20.23 million km²)",
+      depth: "13,100 ft (4,000 m)",
+      description: "The Southern Ocean, also known as the Antarctic Ocean, is the fourth-largest ocean."
+      },
+      {
+      name: "Arctic Ocean",
+      area: "5.4 million mi² (13.98 million km²)",
+      depth: "3,953 ft (1,205 m)",
+      description: "The Arctic Ocean is the smallest and shallowest of the world's five major oceans."
+      },
+      {
+      name: "North Sea",
+      area: "220,000 mi² (570,000 km²)",
+      depth: "308 ft (94 m)",
+      description: "The North Sea is a marginal sea of the Atlantic Ocean located between Great Britain, Scandinavia, Germany, the Netherlands, Belgium, and France."
+      }
+    ];
+    
+
+    // Display ocean introduction text box
+    const oceanInfo = oceans.find(ocean => ocean.name === d);
+
+    body.append("div")
+    .attr("class", "ocean-intro")
+    .style("position", "absolute")
+    .style("font-size", "14px")
+    .style("font-family", "'Open Sans', sans-serif")
+    .style("font-weight", "regular")
+    .style("background", "white")
+    .style("border", "2px solid #72757c")
+    .style("padding", "10px")
+    .style("pointer-events", "none")
+    .style("opacity", "0.9")
+    .style("left", `${event.pageX + 20}px`)
+    .style("top", `${event.pageY + -100}px`)
+    .html(`<strong>${oceanInfo.name}</strong><br/>${oceanInfo.area}<br/>Depth: ${oceanInfo.depth}<br/><br/>${oceanInfo.description}`);
+  })
+
+
+    .on("mouseout", function(event, d) {
+      // Remove highlight from the corresponding ocean nodes
+      nodes.filter(node => node.parent.data[0] === d)
+      .select("rect")
+      .attr("stroke", "none");
+
+      // Remove highlight from the legend item
+      d3.select(this)
+      .style("font-weight", "regular")
+      .style("color", "white");
+
+      // Remove ocean introduction text box
+      body.select(".ocean-intro").remove();
+    });
+
+
+
+ 
   
     // Add hover effect to display total number + proportion of species
     nodes.on("mouseover", function(event, d) {
@@ -417,7 +511,9 @@ function zoom(d, width, height, margin, svg, nodes) {
 
 
 
-  //insert special legend when zoomed in and hide when zoom out, The clicked node will be the new root of the treemap, adding a new d => d.depth.
+  //insert special legend when zoomed in and hide when zoom out
+  
+
 
 
 
@@ -478,10 +574,36 @@ function zoom(d, width, height, margin, svg, nodes) {
   });
 
   
-  // Add depth to focused node + hover info + frangment animation for depth
-  d3.select(this).select("text")
+
+
+
+  // On zoom, change d => d.newGroup to d => d.depth + hover info + fragment animation for depth
+  nodes.transition(t)
+    .attr("transform", d => `translate(${d.x0},${d.y0})`)
+    .select("rect")
+    .attr("width", d => d.x1 - d.x0)
+    .attr("height", d => d.y1 - d.y0)
+    .attr("fill", d => {
+      const parentColor = colourScale(d.parent.data[0]);
+      const shade = d3.scaleLinear()
+        .domain([0, d.parent.children.length - 1])
+        .range([0.1, 0.9]); // Adjust the range to change the darkness of the shade
+      return d3.color(parentColor).darker(shade(d.parent.children.indexOf(d)));
+    });
+
+  nodes.select("text")
+    .transition(t)
+    .attr("x", 10)
+    .attr("y", 25)
+    .style("font-size", d => {
+      const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+      return fontSize < 10 ? "0px" : `${fontSize}px`;
+    })
     .text(d => `${d.data[0]} (Depth: ${d.depth})`);
+
+  d3.select(this).select("text")
 }
+
 
 // Add blur filter to SVG
 svg.append("defs")
