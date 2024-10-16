@@ -119,6 +119,7 @@ createSwimmingFish();
 //--------------------------------------------
 
 
+
 // Rollup --------------------------------------------
 // Remove loading screen 2s after data is fetched, then rollup
 async function fetchData() {
@@ -155,7 +156,7 @@ async function fetchData() {
 
 
 // Treemap --------------------------------------------
-// treemap title
+// title
 const body = d3.select("body").style("padding", "20px");
 
 const title = body
@@ -213,7 +214,7 @@ description.style("opacity", 0)
     // Create the treemap layout
     const treemapLayout = d3.treemap()
       .size([width - margin.left - margin.right, height - margin.top - margin.bottom])
-      .padding(2.5); // Adjust the padding between the nodes
+      .padding(3); // padding between the nodes
       
     // Update the size of the SVG element
     const svg = d3.select("body")
@@ -235,41 +236,55 @@ description.style("opacity", 0)
     .append("g")
     .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
-        // Add fade-in and scale animation for the treemap nodes
-        nodes.style("opacity", 0)
-          .attr("transform", d => `translate(${d.x0},${d.y0}) scale(0.1)`)
-          .transition()
-          .duration(1000)
-          .style("opacity", 0.9)
-          .attr("transform", d => `translate(${d.x0},${d.y0}) scale(1)`);
 
 
-// // Add fade-in and scale animation for the treemap nodes from bottom right
-//         nodes.style("opacity", 0)
-//         .attr("transform-origin", "bottom right")
-//         .attr("transform", d => `translate(${d.x0},${d.y0}) scale(0.1)`)
-//         .transition()
-//         .duration(1000)
-//         .style("opacity", 1)
-//         .attr("transform", d => `translate(${d.x0},${d.y0}) scale(1)`);
+
 
 
     // Define colourScale
     const colourScale = d3.scaleOrdinal()
     .domain(["Pacific", "Atlantic", "Indian", "South", "North", "Arctic"])
-    .range(["#fec76f", "#f5945c", "#b3be62", "#6dbfb8", "#be95be", "#72757c"]);
+    .range(["#fec76f", "#f5945c", "#b3be62", "#6dbfb8", "#be95be", "#373737"]);
+    //.reverse());
+    //.range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]);   
+
     
+    // Define a pattern for polka dots
+    const defs = svg.append("defs");
+
+    const pattern = defs.append("pattern")
+      .attr("id", "polka-dots")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("width", 15)
+      .attr("height", 15);
+
+    pattern.append("circle")
+      .attr("cx", 3)
+      .attr("cy", 3)
+      .attr("r", 1)
+      .attr("fill", "white")
+      .attr("opacity", 0.7);
+
     // Append a rectangle for each node
     nodes.append("rect")
       .attr("width", d => d.x1 - d.x0)
       .attr("height", d => d.y1 - d.y0)
       .attr("fill", d => {
-        const parentColor = colourScale(d.parent.data[0]);
-        const shade = d3.scaleLinear()
-          .domain([0, d.parent.children.length - 1])
-          .range([0.1, 0.9]); // Adjust the range to change the darkness of the shade
-        return d3.color(parentColor).darker(shade(d.parent.children.indexOf(d)));
-      });
+      const parentColor = colourScale(d.parent.data[0]);
+      const shade = d3.scaleLinear()
+        .domain([0, d.parent.children.length - 1])
+        .range([0.1, 0.9]); // Adjust the range to change the darkness of the shade
+      return d3.color(parentColor).darker(shade(d.parent.children.indexOf(d)));
+      })
+      .attr("fill-opacity", 0.95)
+      .attr("stroke", "none");
+
+    // Append a rectangle for the pattern overlay
+    nodes.append("rect")
+      .attr("width", d => d.x1 - d.x0)
+      .attr("height", d => d.y1 - d.y0)
+      .attr("fill", "url(#polka-dots)")
+      .attr("fill-opacity", 0.5);
 
   
     
@@ -291,8 +306,32 @@ description.style("opacity", 0)
           d3.select(this).remove();
         }
       });
+
+
+
+    // Add fade-in and scale animation for the treemap nodes
+    setTimeout(() => {
+      nodes.style("opacity", 0)
+        .attr("transform", d => `translate(${d.x0},${d.y0}) scale(0.1)`)
+        .transition()
+        .duration(1500)
+        .style("opacity", 0.9)
+        .attr("transform", d => `translate(${d.x0},${d.y0}) scale(1)`);
+    }, 2000); // Delay the animation to start after the loading animation is done
+
+
+    // Add fade-in and scale animation for the treemap nodes from bottom right
+    // nodes.style("opacity", 0)
+    // .attr("transform-origin", "bottom right")
+    // .attr("transform", d => `translate(${d.x0},${d.y0}) scale(0.1)`)
+    // .transition()
+    // .duration(1000)
+    // .style("opacity", 1)
+    // .attr("transform", d => `translate(${d.x0},${d.y0}) scale(1)`);
+
     
 //--------------------------------------------
+
 
 
 //Parent/Primary Legend --------------------------------------------    
@@ -325,10 +364,11 @@ description.style("opacity", 0)
       .style("opacity", 1);
 
     legendItems.append("div")
-      .style("width", "20px")
-      .style("height", "20px")
+      .style("width", "15px")
+      .style("height", "15px")
       .style("background-color", colourScale)
-      .style("margin-right", "10px");
+      .style("margin-right", "10px")
+      .style("border-radius", "3px");
 
     legendItems.append("span")
       .style("font-size", "14px")
@@ -342,49 +382,62 @@ description.style("opacity", 0)
       // Highlight the corresponding ocean nodes
       nodes.filter(node => node.parent.data[0] === d)
         .select("rect")
-        .attr("stroke", "#0072ff")    //#00c6ff / #0072ff 
+        .attr("stroke", "#0072ff")  //#00c6ff / #0072ff 
         .attr("stroke-width", 4);
 
       // Highlight the legend item
       d3.select(this)
         .style("font-weight", "bold")
-        .style("color", "#0072ff");    //#00c6ff / #0072ff 
+        .style("color", "#0072ff");
+
 
       const oceans = [
         {
           name: "Pacific Ocean",
-          area: "63.8 million mi² (165.25 million km²)",
-          depth: "14,040 ft (4,280 m)",
+          area: "63.8 million mi²", 
+          metric: "(165.25 million km²)",
+          depth: "14,040 ft",
+          metricd: "(4,280 m)",
           description: "The Pacific Ocean is the largest and deepest of Earth's oceanic divisions."
         },
         {
           name: "Atlantic Ocean",
-          area: "41.1 million mi² (106.46 million km²)",
-          depth: "12,080 ft (3,682 m)",
+          area: "41.1 million mi²",
+          metric: "(106.46 million km²)",
+          depth: "12,080 ft",
+          metricd: "(3,682 m)",
           description: "The Atlantic Ocean is the second-largest of the world's oceans."
         },
         {
           name: "Indian Ocean",
-          area: "27.2 million mi² (70.56 million km²)",
-          depth: "12,990 ft (3,960 m)",
+          area: "27.2 million mi²",
+          metric: "(70.56 million km²)",
+          depth: "12,990 ft",
+          metricd: "(3,960 m)",
           description: "The Indian Ocean is the third-largest of the world's oceanic divisions."
         },
         {
           name: "Southern Ocean",
-          area: "7.8 million mi² (20.23 million km²)",
-          depth: "13,100 ft (4,000 m)",
+          area: "7.8 million mi²",
+          metric: "(20.23 million km²)",
+          depth: "13,100 ft",
+          metricd: "(4,000 m)",
           description: "The Southern Ocean, also known as the Antarctic Ocean, is the fourth-largest ocean."
         },
         {
           name: "Arctic Ocean",
-          area: "5.4 million mi² (13.98 million km²)",
-          depth: "3,953 ft (1,205 m)",
+          area: "5.4 million mi²",
+          metric: "(13.98 million km²)",
+          depth: "3,953 ft",
+          metricd: "(1,205 m)",
           description: "The Arctic Ocean is the smallest and shallowest of the world's five major oceans."
         },
         {
           name: "North Sea",
-          area: "220,000 mi² (570,000 km²)",
-          depth: "308 ft (94 m)",
+          area: "220,000 mi²",
+          metric: "(570,000 km²)",
+          depth: "308 ft",
+          metricd: "(94 m)",
           description: "The North Sea is a marginal sea of the Atlantic Ocean located between Great Britain, Scandinavia, Germany, the Netherlands, Belgium, and France."
         }
       ];
@@ -399,13 +452,15 @@ description.style("opacity", 0)
         .style("font-family", "'Open Sans', sans-serif")
         .style("font-weight", "regular")
         .style("background", "white")
-        .style("border", "2px solid #72757c")
+        .style("border-radius", "7px")
         .style("padding", "10px")
         .style("pointer-events", "none")
+        .style("border", "1.5px solid #72757c")
         .style("opacity", "0.9")
         .style("left", `${event.pageX + 20}px`)
-        .style("top", `${event.pageY + -100}px`)
-        .html(`<strong>${oceanInfo.name}</strong><br/>${oceanInfo.area}<br/>Depth: ${oceanInfo.depth}<br/><br/>${oceanInfo.description}`);
+        .style("top", `${event.pageY - 100}px`)
+        .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // Drop shadow
+        .html(`<strong style="color: #098094;">${oceanInfo.name}</strong><br/>Area: <strong style="color: #098094;">${oceanInfo.area}</strong> <em style="color: grey;">${oceanInfo.metric}</em><br/>Depth: <strong style="color: #098094;">${oceanInfo.depth}</strong>  <em style="color: grey;">${oceanInfo.metricd}</em><br/><br/>${oceanInfo.description}`);
     })
     .on("mouseout", function(event, d) {
       // Remove highlight from the corresponding ocean nodes
@@ -427,7 +482,7 @@ description.style("opacity", 0)
 
  
 //More info for rech treemap rect/node --------------------------------------------  
-    // Add hover effect to display total number + proportion of species
+    // Hover effect to display total number + proportion of species
     nodes.on("mouseover", function(event, d) {
       d3.select(this).select("rect")
         .attr("stroke", "#ac513b")
@@ -438,19 +493,21 @@ description.style("opacity", 0)
       body.append("div") //popup window for Species info
         .attr("class", "tooltip")
         .style("position", "absolute")
-        .style("font-size", "16px")
+        .style("font-size", "14px")
         .style("font-family", "'Open Sans', sans-serif")
         .style("font-weight", "regular")
         .style("background", "white")
-        .style("border", "2px solid #72757c")
+        .style("border", "1.5px solid #72757c")
         .style("padding", "10px")
         .style("pointer-events", "none")
         .style("opacity", "0.9")
+        .style("border-radius", "10px") // Add 10px radius
+        .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // Add drop shadow
         .style("left", `${event.pageX + 20}px`)
         .style("top", `${event.pageY + 20}px`)
-        .html(`<strong>${d.data[0]}</strong>
-          <br/>Proportion: ${Math.round(d.value / d.parent.value * 100)}%
-          <br/>Total Species: ${d.value}`);
+        .html(`<strong style="color: #098094;">${d.data[0]}</strong>
+          <br/>Proportion: <strong style="color: #098094;">${Math.round(d.value / d.parent.value * 100)}%</strong>
+          <br/>Total Species: <strong style="color: #098094;">${d.value}</strong>`);
     })
     .on("mouseout", function() {
       d3.select(this).select("rect")
@@ -463,7 +520,7 @@ description.style("opacity", 0)
 
 
 
-//Trasnition from Parent - Child in the treemap -Zoom function --------------------------------------------
+//Transition from Parent - Child in the treemap -Zoom function --------------------------------------------
     // click onto the treemap to zoom in and out, when zoomed in, the treemap will be centered on the clicked node, with the rest gaussian blurred. The clicked node will be the new root of the treemap, adding a new d => d.depth. The other nodes will be transitioned to their new positions, when zoomed out, the treemap will return to its original state.
 
 function zoom(d, width, height, margin, svg, nodes) {
@@ -511,8 +568,7 @@ function zoom(d, width, height, margin, svg, nodes) {
 
 
 
-//secondary legend legendSize, legendDepth when zoomed in and hide when zoom out
-// Secondary Legend --------------------------------------------
+// Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
 // Depth
 const legendDepth = {
   gradientBar: {
@@ -520,16 +576,19 @@ const legendDepth = {
     y: 10,
     width: 15,
     height: 80,
-    colorStart: "#ff9966",
-    colorEnd: "#4d2600"
+    colorStart: d3.color(colourScale(d.parent.data[0])).brighter(0),
+    colorEnd: d3.color(colourScale(d.parent.data[0])).darker(3)
   }
 };
 
 const svgDepth = d3.select("body")
   .append("svg")
-  .attr("width", 100)
-  .attr("height", 300)
-  .style("background-color", "transparent");
+  .attr("width", 50)
+  .attr("height", 100)
+  .style("background-color", "transparent")
+  .style("position", "absolute")
+  .style("top", "22%")
+  .style("transform", "translate(-200%, -50%)");
 
 const gradient = svgDepth.append("defs")
   .append("linearGradient")
@@ -572,24 +631,28 @@ svgDepth.append("rect")
       .style("font-family", "'Open Sans', sans-serif")
       .style("font-weight", "regular")
       .style("background", "white")
-      .style("border", "2px solid #72757c")
+      .style("border", "1.5px solid #72757c")
       .style("padding", "10px")
       .style("pointer-events", "none")
       .style("opacity", "0.9")
+      .style("border-radius", "10px") // radius
+      .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
       .style("left", `${x + 20}px`)
-      .style("top", `${y + 20}px`)
-      .html(`<strong>Depth</strong><br/>The darker the shade,<br/>the greater the depth.<br/>*Cube within 20m intervals/bands.`);
-  })
-  .on("mouseout", function() {
+      .style("top", `${y - 20}px`)
+      .html(`<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Cube within 20m intervals/bands.`)
+      .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
+    })
+    .on("mouseout", function() {
     d3.select(".tooltip-depth").remove();
   });
 
+  
 // Species population size
 const legendSize = {
   squares: [
-    { x: 10, y: 10, size: 80, color: "#ec8f59" },
-    { x: 10, y: 30, size: 60, color: "#955a38" },
-    { x: 10, y: 50, size: 40, color: "#5e3923" }
+    { x: 10, y: 10, size: 80, color: d3.color(colourScale(d.parent.data[0])).brighter(0) },
+    { x: 10, y: 30, size: 60, color: d3.color(colourScale(d.parent.data[0])).darker(1) },
+    { x: 10, y: 50, size: 40, color: d3.color(colourScale(d.parent.data[0])).darker(2) }
   ],
   draw: function(svg) {
     svg.selectAll("rect")
@@ -603,7 +666,6 @@ const legendSize = {
       .attr("fill", d => d.color)
       .on("mouseover", function(event, d) {
         const [x, y] = d3.pointer(event);
-
         d3.select("body").append("div")
           .attr("class", "tooltip-size")
           .style("position", "absolute")
@@ -615,11 +677,14 @@ const legendSize = {
           .style("padding", "10px")
           .style("pointer-events", "none")
           .style("opacity", "0.9")
+          .style("border-radius", "10px") // radius
+          .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
           .style("left", `${x + 20}px`)
           .style("top", `${y + 20}px`)
-          .html(`<strong>Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`);
-      })
-      .on("mouseout", function() {
+          .html(`<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`)
+          .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);;
+            })
+            .on("mouseout", function() {
         d3.select(".tooltip-size").remove();
       });
 
@@ -638,10 +703,66 @@ const svgSize = d3.select("body")
   .append("svg")
   .attr("width", 100)
   .attr("height", 100)
-  .style("background-color", "transparent");
+  .style("background-color", "transparent")
+  .style("position", "absolute")
+  .style("left", "49%")
+  .style("top", "22%") // translate y axis
+  .style("transform", "translate(10%, -50%)");
 
 legendSize.draw(svgSize);
-//--------------------------------------------
+
+
+// Group legendDepth, legendSize
+const legendGroup = d3.select("body")
+  .append("div")
+  .attr("class", "legend-group")
+  .style("display", "flex")
+  .style("justify-content", "center")
+  .style("padding-bottom", "30px")
+  .style("opacity", 0.9)
+  .style("transform", "scale(1.5)")
+  .style("position", "absolute")
+  .style("top", "23%")
+  .style("left", "49%")
+
+legendGroup.append(() => svgDepth.node())
+  .style("opacity", 0)
+  .transition()
+  .duration(1200)
+  .style("opacity", 1);
+
+legendGroup.append(() => svgSize.node())
+  .style("opacity", 0)
+  .transition()
+  .duration(1200)
+  .style("opacity", 1);
+
+
+// Legend title for depth
+const depthTitle = d3.select("body").append("div")
+  .style("position", "absolute")
+  .style("left", "calc(50% - 81px)")
+  .style("top", "calc(22% + 95px)")
+  .style("transform", "translate(-200%, -50%)")
+  .style("font-size", "14px")
+  .style("font-family", "'Open Sans', sans-serif")
+  .style("font-weight", "regular")
+  .style("color", "white")
+  .text("Depth");
+
+// Legend title for species volume
+const speciesVolumeTitle = d3.select("body").append("div")
+  .style("position", "absolute")
+  .style("left", "calc(50% + 8px)")
+  .style("top", "calc(22% + 95px)")
+  .style("transform", "translate(10%, -50%)")
+  .style("font-size", "14px")
+  .style("font-family", "'Open Sans', sans-serif")
+  .style("font-weight", "regular")
+  .style("color", "white")
+  .text("Species Volume");
+
+  //--------------------------------------------
 
 
 
@@ -703,13 +824,19 @@ legendSize.draw(svgSize);
     description.transition().duration(750).style("opacity", 1);
 
     // Remove secondary legend when zoomed out
-    svgSize.remove();
-    svgDepth.remove();
+    svgSize.transition().duration(400).style("opacity", 0).remove();
+    svgDepth.transition().duration(400).style("opacity", 0).remove();
+
+    // Remove legend titles with fade out animation when zoomed out
+    depthTitle.transition().duration(400).style("opacity", 0).remove();
+    speciesVolumeTitle.transition().duration(400).style("opacity", 0).remove();
 
     }
   });
 
   //--------------------------------------------
+
+
 
 //in progress - depth as the third level of the hierarchy
 
