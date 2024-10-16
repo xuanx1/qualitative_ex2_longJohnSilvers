@@ -838,9 +838,61 @@ const speciesVolumeTitle = d3.select("body").append("div")
 
 
 
+  // Randomized fishes path appear when zoom in and confined to each rectangle, swimming like in an aquarium, scaled to 40% of its original size - but in front of the treemap and the fishes behind the treemap all disappear but reappear when zoom out
+
+  // // Function to create swimming fish within a node
+  // function createSwimmingFishInNode(node) {
+  //   const fishContainer = node.append("div")
+  //     .attr("class", "fish-container")
+  //     .style("position", "absolute")
+  //     .style("top", 0)
+  //     .style("left", 0)
+  //     .style("width", `${node.node().getBBox().width}px`)
+  //     .style("height", `${node.node().getBBox().height}px`)
+  //     .style("pointer-events", "none")
+  //     .style("z-index", 1); // fishes in front of the treemap
+
+  //   for (let i = 0; i < 3; i++) {
+  //     const fish = fishContainer.append("img")
+  //       .attr("src", possiblePaths[Math.floor(Math.random() * possiblePaths.length)])
+  //       .style("position", "absolute")
+  //       .style("width", `${Math.random() * 20 + 30}px`) // Randomize size, scaled to 40%
+  //       .style("height", "auto")
+  //       .style("top", `${Math.random() * 100}%`)
+  //       .style("left", `${Math.random() * 100}%`)
+  //       .style("filter", `hue-rotate(${Math.random() * 360}deg)`) // Randomize color
+  //       .style("transition", "transform 5s linear");
+
+  //     animateFishInNode(fish, node);
+  //   }
+  // }
+
+  // function animateFishInNode(fish, node) {
+  //   const newTop = `${Math.random() * 100}%`;
+  //   const newLeft = `${Math.random() * 100}%`;
+
+  //   fish.style("transform", `translate(${newLeft}, ${newTop})`);
+
+  //   setTimeout(() => animateFishInNode(fish, node), 5000);
+  // }
+
+  // // Create swimming fish in the clicked node
+  // createSwimmingFishInNode(d3.select(this));
+
+  // // Hide the background fish when zoomed in
+  // d3.selectAll(".fish-container").style("display", "none");
+
+  // // Show the background fish when zoomed out
+  // d3.select("body").on("click", function(event) {
+  //   if (!event.target.closest("svg")) {
+  //     d3.selectAll(".fish-container").style("display", "block");
+  //   }
+  // });
+
+
 //in progress - depth as the third level of the hierarchy
 
-  // On zoom, change d => d.newGroup to d => d.depth + hover info + fragment animation for depth
+  // On zoom, add d => d.depth + hover info + fragment animation for depth
   nodes.transition(t)
     .attr("transform", d => `translate(${d.x0},${d.y0})`)
     .select("rect")
