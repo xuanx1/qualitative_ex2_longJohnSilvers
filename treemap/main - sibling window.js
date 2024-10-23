@@ -1,5 +1,5 @@
 
-   // Hover effect to display randomised fish info
+   // Hover effect to display fish info
    nodes.on("mouseover", function(event, d) {
     d3.select(this).select("rect")
       .attr("stroke", "#ac513b")

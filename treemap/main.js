@@ -782,6 +782,34 @@ function zoom(d, width, height, margin, svg, nodes) {
       return fontSize < 10 ? "0px" : `${fontSize}px`;
     });
 
+    
+    //toggle const to show/hide secondarey divisions upon zoom in/out
+    
+    // // pacific
+    // pPredator
+    // pPrey
+    // pOthers
+
+    // // atlantic
+    // atPredator
+    // atPrey
+    // atOthers
+
+    // // indian
+    // iPredator
+    // iPrey
+    // iOthers
+
+    // // southern
+    // sPredator
+    // sOthers
+
+    // // north
+    // nPredator
+    // nOthers
+
+    // // arctic
+    // arPredator
 
 
   //legend disappear when zoom in
@@ -789,6 +817,10 @@ function zoom(d, width, height, margin, svg, nodes) {
 
   //tree map description disappear when zoom in
   description.transition().duration(750).style("opacity", 0);
+
+
+
+
 
 
 
@@ -837,7 +869,7 @@ svgDepth.append("rect")
   .attr("height", legendDepth.gradientBar.height)
   .attr("fill", "url(#gradientBar)");
 
-// Add hover effect for elaborate info
+// Add hover effect for elaborate legend info
 svgDepth.append("rect")
   .attr("x", legendDepth.gradientBar.x)
   .attr("y", legendDepth.gradientBar.y)
@@ -871,7 +903,7 @@ svgDepth.append("rect")
   });
 
   
-// Species population size
+// Species population size legend
 const legendSize = {
   squares: [
     { x: 10, y: 10, size: 80, color: d3.color(colourScale(d.parent.data[0])).brighter(0) },
@@ -936,7 +968,7 @@ const svgSize = d3.select("body")
 legendSize.draw(svgSize);
 
 
-// Group legendDepth, legendSize
+// Group legendDepth, legendSize legends
 const legendGroup = d3.select("body")
   .append("div")
   .attr("class", "legend-group")
@@ -1060,7 +1092,7 @@ const speciesVolumeTitle = d3.select("body").append("div")
 
   //--------------------------------------------
 
-
+  //MOVE ALL THESE CRAP BELOW ZOOM FUNCTION
 
   // Randomized fishes path appear when zoom in and confined to each rectangle, swimming like in an aquarium, scaled to 40% of its original size - but in front of the treemap and the fishes behind the treemap all disappear but reappear when zoom out
 
