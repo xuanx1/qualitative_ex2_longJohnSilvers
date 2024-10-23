@@ -134,7 +134,28 @@ async function fetchData() {
     // Load the data
     const response = await d3.json("./data/[TO_BE_USED]updated_final_copy.json");
 
+    //Depth range 
+    function getDepthRange(depth) {
+      if (depth <= 100) {
+        // 0-100 meters: 20-meter increments
+        if (depth <= 20) return '0-20m';
+        else if (depth <= 40) return '20-40m';
+        else if (depth <= 60) return '40-60m';
+        else if (depth <= 80) return '60-80m';
+        else return '80-100m';
+      } else if (depth <= 1000) {
+        // 100-1000 meters: 100-meter increments
+        const lowerBound = Math.floor(depth / 100) * 100;
+        return `${lowerBound}-${lowerBound + 100}m`;
+      } else {
+        //  Over 1000 meters: Break into 500-meter increments
+        const lowerBound = Math.floor(depth / 500) * 500;
+        return `${lowerBound}-${lowerBound + 500}m`;
+          }
+        }
 
+
+    
     // Group data by ocean and depth, the ocean is the first level of the hierarchy, and the depth type is the second level
     const data = d3.rollup(
       response, 
@@ -149,8 +170,205 @@ async function fetchData() {
       //d => d.depth //to be add during phase 2
     );
 
-    console.log("Predator/Prey by Oceans and(phase 2) Depths:");
+    console.log("Predator/Prey by Oceans, then Depths:");
     console.log(data);
+    
+// Phase 2: Group data by depth
+    // Pacific
+
+    const pacificPredator = response.filter(
+      (d) => d.ocean.includes('Pacific') && d.newGroup === 'Predator'
+    );
+
+    const pPredator = d3.rollup(
+      pacificPredator,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const pacificPrey = response.filter(
+      (d) => d.ocean.includes('Pacific') && d.newGroup === 'Prey'
+    );
+    const pPrey = d3.rollup(
+      pacificPrey,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const pacificOthers = response.filter(
+      (d) => d.ocean.includes('Pacific') && d.newGroup === 'Others'
+    );
+
+    const pOthers = d3.rollup(
+      pacificOthers,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+
+    console.log(pPredator);
+    console.log(pPrey);
+    console.log(pOthers);
+
+
+
+    // Atlantic
+    const atlanticPredator = response.filter(
+      (d) => d.ocean.includes('Atlantic') && d.newGroup === 'Predator'
+    );
+    const atPredator = d3.rollup(
+      atlanticPredator,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const atlanticPrey = response.filter(
+      (d) => d.ocean.includes('Atlantic') && d.newGroup === 'Prey'
+    );
+
+    const atPrey = d3.rollup(
+      atlanticPrey,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const atlanticOthers = response.filter(
+      (d) => d.ocean.includes('Atlantic') && d.newGroup === 'Others'
+    );
+    const atOthers = d3.rollup(
+      atlanticOthers,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    console.log(atPredator);
+    console.log(atPrey);
+    console.log(atOthers);
+
+
+
+    // Indian
+    const indianPredator = response.filter(
+      (d) => d.ocean.includes('Indian') && d.newGroup === 'Predator'
+    );
+    const iPredator = d3.rollup(
+      indianPredator,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const indianPrey = response.filter(
+      (d) => d.ocean.includes('Indian') && d.newGroup === 'Prey'
+    );
+
+    const iPrey = d3.rollup(
+      indianPrey,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const indianOthers = response.filter(
+      (d) => d.ocean.includes('Indian') && d.newGroup === 'Others'
+    );
+
+    const iOthers = d3.rollup(
+      indianOthers,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    console.log(iPredator);
+    console.log(iPrey);
+    console.log(iOthers);
+
+
+
+    // Southern
+    const southPredator = response.filter(
+      (d) => d.ocean.includes('South') && d.newGroup === 'Predator'
+    );
+
+    const sPredator = d3.rollup(
+      southPredator,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const southOthers = response.filter(
+      (d) => d.ocean.includes('South') && d.newGroup === 'Others'
+    );
+
+    const sOthers = d3.rollup(
+      southOthers,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    console.log(sPredator);
+    console.log(sOthers);
+
+
+    // North
+    const northPredator = response.filter(
+      (d) => d.ocean.includes('North') && d.newGroup === 'Predator'
+    );
+
+    const nPredator = d3.rollup(
+      northPredator,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    const northOthers = response.filter(
+      (d) => d.ocean.includes('North') && d.newGroup === 'Others'
+    );
+
+    const nOthers = d3.rollup(
+      northOthers,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    console.log(nPredator);
+    console.log(nOthers);
+
+
+    // Arctic
+    const arcticPredator = response.filter(
+      (d) => d.ocean.includes('Arctic') && d.newGroup === 'Predator'
+    );
+
+    const arPredator = d3.rollup(
+      arcticPredator,
+      (v) => v.length,
+      (d) => getDepthRange(d.depth)
+    );
+
+    console.log(arPredator);
+
+
+
+    //const for child tree map rollup
+    // pPredator
+    // pPrey
+    // pOthers
+
+    // atPredator
+    // atPrey
+    // atOthers
+
+    // iPredator
+    // iPrey
+    // iOthers
+
+    // sPredator
+    // sOthers
+
+    // nPredator
+    // nOthers
+
+    // arPredator
+
 //--------------------------------------------
 
 
