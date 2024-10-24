@@ -1070,18 +1070,6 @@ description.style("opacity", 0)
         return fontSize < 10 ? "0px" : `${fontSize}px`;
         })
         .text(d => d.data[0]);
-
-      // Remove detailed nodes
-      svg.selectAll(".detailed-node").remove();
-
-      // Remove secondary legend when zoomed out
-      d3.selectAll(".legend-group, .tooltip-depth, .tooltip-size").transition().duration(400).style("opacity", 0).remove();
-
-      // legend return when exit treemap
-      legend.transition().duration(750).style("opacity", 1);
-
-      // tree map description return when exit treemap
-      description.transition().duration(750).style("opacity", 1);
       }
     });
           
@@ -1105,7 +1093,7 @@ description.style("opacity", 0)
   function createZoomedFish(node) {
     const fishContainer = d3.select("body").append("div")
       .attr("class", "zoomed-fish-container")
-      .style("position", "absolute")
+      .style("position", "flexible")
       .style("top", `${node.y0 + (node.y1 - node.y0) * 0.1}px`)
       .style("left", `${node.x0 + (node.x1 - node.x0) * 0.1}px`)
       .style("width", `${(node.x1 - node.x0) * 0.8}px`)
@@ -1113,14 +1101,14 @@ description.style("opacity", 0)
       .style("pointer-events", "none")
       .style("z-index", 1); // fishes in front of the treemap
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 15; i++) {
       const fish = fishContainer.append("img")
         .attr("src", possiblePaths[Math.floor(Math.random() * possiblePaths.length)])
         .style("position", "absolute")
-        .style("width", `${Math.random() * 50 + 120}px`) // Randomize size, scaled to 200%
+        .style("width", `${Math.random() * 50 + 80}px`) // Randomize size, scaled to 200%
         .style("height", "auto")
-        .style("top", `${Math.random() * 100}%`)
-        .style("left", `${Math.random() * 100}%`)
+        .style("top", `${Math.random() * 80 + 35}%`) // Disperse fish within the node
+        .style("left", `${Math.random() * 80 + 0}%`) // Disperse fish within the node
         .style("filter", `hue-rotate(${Math.random() * 360}deg)`) // Randomize color
         .style("transition", "transform 5s linear");
 
@@ -1130,16 +1118,72 @@ description.style("opacity", 0)
 
 
   nodes.on("click", function(event, d) {
-    d3.selectAll(".fish-container").style("display", "none"); // Hide background fish
+    d3.selectAll(".fish-container")
+      .transition()
+      .duration(500)
+      .style("opacity", 0)
+      .on("end", function() {
+        d3.select(this).style("display", "none");
+      }); // Fade out background fish
+
     d3.selectAll(".zoomed-fish-container").remove(); // Remove previous zoomed fish
+
     createZoomedFish(d);
+
+    d3.selectAll(".zoomed-fish-container")
+      .style("opacity", 0)
+      .transition()
+      .duration(500)
+      .style("opacity", 1); // Fade in zoomed fish
+
     zoom(d, width, height, margin, svg, nodes);
   });
 
   d3.select("body").on("click", function(event) {
     if (!event.target.closest("svg")) {
-      d3.selectAll(".zoomed-fish-container").remove(); // Remove zoomed fish
-      d3.selectAll(".fish-container").style("display", "block"); // Show background fish
+      d3.selectAll(".zoomed-fish-container")
+        .transition()
+        .duration(500)
+        .style("opacity", 0)
+        .on("end", function() {
+          d3.select(this).remove(); // Remove zoomed fish
+        });
+
+      d3.selectAll(".fish-container")
+        .style("display", "block")
+        .transition()
+        .duration(500)
+        .style("opacity", 1); // Fade in background fish
+
+      svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
+      nodes.transition().duration(750)
+        .attr("transform", d => `translate(${d.x0},${d.y0})`)
+        .select("rect")
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0)
+        .style("filter", "none");
+
+      nodes.select("text")
+        .transition().duration(750)
+        .attr("x", 10)
+        .attr("y", 25)
+        .style("font-size", d => {
+          const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+          return fontSize < 10 ? "0px" : `${fontSize}px`;
+        })
+        .text(d => d.data[0]);
+
+      // Remove detailed nodes
+      svg.selectAll(".detailed-node").remove();
+
+      // Remove secondary legend when zoomed out
+      d3.selectAll(".legend-group, .tooltip-depth, .tooltip-size").transition().duration(400).style("opacity", 0).remove();
+
+      // legend return when exit treemap
+      legend.transition().duration(750).style("opacity", 1);
+
+      // tree map description return when exit treemap
+      description.transition().duration(750).style("opacity", 1);
     }
   });
 
