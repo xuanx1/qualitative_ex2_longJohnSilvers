@@ -7,4 +7,5 @@ Building on the previous quantitative exercise, we aspire to continue with the d
 ![Screenshot 2024-10-24 022312](https://github.com/user-attachments/assets/a8371833-b246-4fa6-95ec-3039af5441ba)
 
 ## Zoomed in to Predators of the Pacific Ocean
-![Screenshot 2024-10-24 022254](https://github.com/user-attachments/assets/8a170c4a-ccc7-410d-9640-fcc886434025)
+![Screenshot 2024-10-24 022451](https://github.com/user-attachments/assets/2b32e23a-59d8-445f-bfe0-7cc2586ffd04)
+
