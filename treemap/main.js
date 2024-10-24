@@ -1083,19 +1083,6 @@ description.style("opacity", 0)
   // after clicking on a node and zoom in, Randomized fishes path fade in swimming while confined within the node, like in an aquarium, scaled to 150% of its original size - but in front of the treemap, 
   
 
-  async function loadFishData() {
-    const fishData = await d3.json('./data/[TO_BE_USED]updated_final_copy.json');
-    const imgData = await d3.json('./data/imgv2.json');
-  
-    // Merge fish data with their thumbnails using the 'id' field
-    const mergedData = fishData.map(fish => ({
-      ...fish,
-      thumbnail: imgData.find(img => img.id === fish.id)?.thumbnail || 'default_image.jpg'
-    }));
-  
-    console.log('Merged Fish Data:', mergedData); 
-  
-  }
 
   function createZoomedFish(node) {
     const fishContainer = d3.select("body").append("div")
@@ -1121,14 +1108,25 @@ description.style("opacity", 0)
         .style("cursor", "pointer")
         .style("transition", "transform 5s linear");
 
-        fish.on("mouseover", function(event, d) {
+        fish.on("mouseover", async function(event, d) {
           const [x, y] = d3.pointer(event);
-          
+
+          const fishData = await d3.json('./data/[TO_BE_USED]updated_final_copy.json');
+          const imgData = await d3.json('./data/imgv2.json');
+
+          // Merge fish data with their thumbnails using the 'id' field
+          const mergedData = fishData.map(fish => ({
+            ...fish,
+            thumbnail: imgData.find(img => img.id === fish.id)?.thumbnail || 'default_image.jpg'
+          }));
+
+          console.log('Merged Fish Data:', mergedData);
+
           // Hover over each fish img to show more info - image thumbnail + common names + scientific names(italics) + archetypes + depth + map 
-            d3.select("body").append("div")
+          d3.select("body").append("div")
             .attr("class", "tooltip-fish")
             .style("position", "absolute")
-            .style("font-size", "14px")
+            .style("font-size", "18px")
             .style("font-family", "'Open Sans', sans-serif")
             .style("font-weight", "regular")
             .style("background", "white")
@@ -1141,16 +1139,14 @@ description.style("opacity", 0)
             .style("left", `${x + 800}px`)
             .style("top", `${y + 500}px`) //find a way to make it flexible
             .html(`
-              <a href="${d.record_link}" target="_blank">
-                <img src="${d.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
-              <br/><strong style="color: #098094;">${d.common_name}</strong>
-              <br/><i style="color: #808080; font-size: 10pt;">${d.title}</i>
-              <br/>Archetype: <strong style="color: #098094;">${d.newGroup}</strong>
-              <br/>Depth: <strong style="color: #098094;">${d.depth} m</strong>
-              <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${d.longitude}/${d.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
+              <a href="${imgData.record_link}" target="_blank">
+              <img src="${imgData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
+              <br/><strong style="color: #098094;">${fishData.common_name}</strong>
+              <br/><i style="color: #808080; font-size: 10pt;">${fishData.title}</i>
+              <br/>Archetype: <strong style="color: #098094;">${fishData.newGroup}</strong>
+              <br/>Depth: <strong style="color: #098094;">${fishData.depth} m</strong>
+              <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${fishData.longitude}/${fishData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
             `);
-
-
         })
         .on("mouseout", function() {
           d3.select(".tooltip-fish").remove();
