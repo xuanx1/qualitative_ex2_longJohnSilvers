@@ -942,7 +942,7 @@ description.style("opacity", 0)
           .style("opacity", 0.9)
           .style("transform", "scale(1.5)")
           .style("position", "absolute")
-          .style("top", "19%")
+          .style("top", "23%")
           .style("left", "49%");
 
         legendGroup.append(() => svgDepth.node())
@@ -1018,7 +1018,7 @@ description.style("opacity", 0)
       //     }
       //   });
 
-      // Add fade-in and scale animation for the detailed nodes
+      // // Add fade-in and scale animation for the detailed nodes
       // setTimeout(() => {
       //   detailedNodes.style("opacity", 0)
       //     .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(0.1)`)
