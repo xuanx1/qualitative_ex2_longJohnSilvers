@@ -455,10 +455,6 @@ description.style("opacity", 0)
     .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
 
-
-
-
-
     // Define colourScale
     const colourScale = d3.scaleOrdinal()
     .domain(["Pacific", "Atlantic", "Indian", "South", "North", "Arctic"])
@@ -466,22 +462,11 @@ description.style("opacity", 0)
     //.reverse());
     //.range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]);   
 
-    
-    // Define a pattern for polka dots
-    const defs = svg.append("defs");
 
-    const pattern = defs.append("pattern")
-      .attr("id", "polka-dots")
-      .attr("patternUnits", "userSpaceOnUse")
-      .attr("width", 15)
-      .attr("height", 15);
 
-    pattern.append("circle")
-      .attr("cx", 3)
-      .attr("cy", 3)
-      .attr("r", 1)
-      .attr("fill", "white")
-      .attr("opacity", 0.7);
+    // Add a pattern for the overlay - fish motif?
+
+
 
     // Append a rectangle for each node
     nodes.append("rect")
@@ -491,20 +476,11 @@ description.style("opacity", 0)
       const parentColor = colourScale(d.parent.data[0]);
       const shade = d3.scaleLinear()
         .domain([0, d.parent.children.length - 1])
-        .range([0.1, 0.9]); // Adjust the range to change the darkness of the shade
+        .range([0.1, 0.5]); // Adjust the range to change the darkness of the shade
       return d3.color(parentColor).darker(shade(d.parent.children.indexOf(d)));
       })
-      .attr("fill-opacity", 0.95)
+      .attr("fill-opacity", 0.9)
       .attr("stroke", "none");
-
-    // Append a rectangle for the pattern overlay
-    nodes.append("rect")
-      .attr("width", d => d.x1 - d.x0)
-      .attr("height", d => d.y1 - d.y0)
-      .attr("fill", "url(#polka-dots)")
-      .attr("fill-opacity", 0.5);
-
-  
     
     // Append text labels
     nodes.append("text")
@@ -524,8 +500,6 @@ description.style("opacity", 0)
           d3.select(this).remove();
         }
       });
-
-
 
     // Add fade-in and scale animation for the treemap nodes
     setTimeout(() => {
@@ -699,7 +673,7 @@ description.style("opacity", 0)
 
 
  
-//More info for rech treemap rect/node --------------------------------------------  
+//More info for each treemap rect/node --------------------------------------------  
     // Hover effect to display total number + proportion of species
     nodes.on("mouseover", function(event, d) {
       d3.select(this).select("rect")
@@ -745,354 +719,413 @@ description.style("opacity", 0)
 
 
 //Transition from Parent - Child in the treemap -Zoom function --------------------------------------------
-    // click onto the treemap to zoom in and out, when zoomed in, the treemap will be centered on the clicked node, with the rest gaussian blurred. The clicked node will be the new root of the treemap, adding a new d => d.depth. The other nodes will be transitioned to their new positions, when zoomed out, the treemap will return to its original state.
-
-function zoom(d, width, height, margin, svg, nodes) {
-  console.log("Zoom function called with node:", d);
-
-  const root = d3.hierarchy(d.data[0], ([, value]) => value)
-    .sum(([, value]) => value)
-    .sort((a, b) => b.value - a.value);
-
-  const newTreemapLayout = d3.treemap()
-    .size([width - margin.left - margin.right, height - margin.top - margin.bottom])
-    .padding(2.5);
-
-  newTreemapLayout(root);
-
-  const t = svg.transition().duration(750);
-
-  nodes.transition(t)
-    .attr("transform", d => `translate(${d.x0},${d.y0})`)
-    .select("rect")
-    .attr("width", d => d.x1 - d.x0)
-    .attr("height", d => d.y1 - d.y0);
-
-  // Zoom into the clicked node to fill the page
-  svg.transition(t)
-    .attr("viewBox", `${d.x0 - 50} ${d.y0 - 50} ${d.x1 - d.x0 + 100} ${d.y1 - d.y0 + 100}`)
-
-
-  nodes.select("text")
-    .transition(t)
-    .attr("x", 10)
-    .attr("y", 25)
-    .style("font-size", d => {
-      const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
-      return fontSize < 10 ? "0px" : `${fontSize}px`;
-    });
-
+// the part clicked will further fragment the treemap and present data from the "getdetaileddata" and fades out when zooming out
     
-    //toggle const to show/hide secondarey divisions upon zoom in/out
+    function getDetailedData(ocean) {
+      switch (ocean) {
+        case "Pacific":
+          return {
+            "Predator": pPredator,
+            "Prey": pPrey,
+            "Others": pOthers
+          };
+        case "Atlantic":
+          return {
+            "Predator": atPredator,
+            "Prey": atPrey,
+            "Others": atOthers
+          };
+        case "Indian":
+          return {
+            "Predator": iPredator,
+            "Prey": iPrey,
+            "Others": iOthers
+          };
+        case "South":
+          return {
+            "Predator": sPredator,
+            "Others": sOthers
+          };
+        case "North":
+          return {
+            "Predator": nPredator,
+            "Others": nOthers
+          };
+        case "Arctic":
+          return {
+            "Predator": arPredator
+          };
+        default:
+          return {};
+      }
+    }
     
-    // // pacific
-    // pPredator
-    // pPrey
-    // pOthers
+    function zoom(d, width, height, margin, svg, nodes) {
+      const x = d3.scaleLinear().domain([d.x0, d.x1]).range([0, width]);
+      const y = d3.scaleLinear().domain([d.y0, d.y1]).range([0, height]);
 
-    // // atlantic
-    // atPredator
-    // atPrey
-    // atOthers
-
-    // // indian
-    // iPredator
-    // iPrey
-    // iOthers
-
-    // // southern
-    // sPredator
-    // sOthers
-
-    // // north
-    // nPredator
-    // nOthers
-
-    // // arctic
-    // arPredator
-
-
-  //legend disappear when zoom in
-  legend.transition().duration(750).style("opacity", 0);
-
-  //tree map description disappear when zoom in
-  description.transition().duration(750).style("opacity", 0);
-
-
-
-
-
-
-
-// Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
-// Depth
-const legendDepth = {
-  gradientBar: {
-    x: 40,
-    y: 10,
-    width: 15,
-    height: 80,
-    colorStart: d3.color(colourScale(d.parent.data[0])).brighter(0),
-    colorEnd: d3.color(colourScale(d.parent.data[0])).darker(3)
-  }
-};
-
-const svgDepth = d3.select("body")
-  .append("svg")
-  .attr("width", 50)
-  .attr("height", 100)
-  .style("background-color", "transparent")
-  .style("position", "absolute")
-  .style("top", "22%")
-  .style("transform", "translate(-200%, -50%)");
-
-const gradient = svgDepth.append("defs")
-  .append("linearGradient")
-  .attr("id", "gradientBar")
-  .attr("x1", "0%")
-  .attr("y1", "0%")
-  .attr("x2", "0%")
-  .attr("y2", "100%");
-
-gradient.append("stop")
-  .attr("offset", "0%")
-  .attr("stop-color", legendDepth.gradientBar.colorStart);
-
-gradient.append("stop")
-  .attr("offset", "100%")
-  .attr("stop-color", legendDepth.gradientBar.colorEnd);
-
-svgDepth.append("rect")
-  .attr("x", legendDepth.gradientBar.x)
-  .attr("y", legendDepth.gradientBar.y)
-  .attr("width", legendDepth.gradientBar.width)
-  .attr("height", legendDepth.gradientBar.height)
-  .attr("fill", "url(#gradientBar)");
-
-// Add hover effect for elaborate legend info
-svgDepth.append("rect")
-  .attr("x", legendDepth.gradientBar.x)
-  .attr("y", legendDepth.gradientBar.y)
-  .attr("width", legendDepth.gradientBar.width)
-  .attr("height", legendDepth.gradientBar.height)
-  .attr("fill", "transparent")
-  .style("cursor", "pointer")
-  .on("mouseover", function(event) {
-    const [x, y] = d3.pointer(event);
-
-    d3.select("body").append("div")
-      .attr("class", "tooltip-depth")
-      .style("position", "absolute")
-      .style("font-size", "14px")
-      .style("font-family", "'Open Sans', sans-serif")
-      .style("font-weight", "regular")
-      .style("background", "white")
-      .style("border", "1.5px solid #72757c")
-      .style("padding", "10px")
-      .style("pointer-events", "none")
-      .style("opacity", "0.9")
-      .style("border-radius", "10px") // radius
-      .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
-      .style("left", `${x + 20}px`)
-      .style("top", `${y - 20}px`)
-      .html(`<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Cube within 20m intervals/bands.`)
-      .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
-    })
-    .on("mouseout", function() {
-    d3.select(".tooltip-depth").remove();
-  });
-
-  
-// Species population size legend
-const legendSize = {
-  squares: [
-    { x: 10, y: 10, size: 80, color: d3.color(colourScale(d.parent.data[0])).brighter(0) },
-    { x: 10, y: 30, size: 60, color: d3.color(colourScale(d.parent.data[0])).darker(1) },
-    { x: 10, y: 50, size: 40, color: d3.color(colourScale(d.parent.data[0])).darker(2) }
-  ],
-  draw: function(svg) {
-    svg.selectAll("rect")
-      .data(this.squares)
-      .enter()
-      .append("rect")
-      .attr("x", d => d.x)
-      .attr("y", d => d.y)
-      .attr("width", d => d.size)
-      .attr("height", d => d.size)
-      .attr("fill", d => d.color)
-      .on("mouseover", function(event, d) {
-        const [x, y] = d3.pointer(event);
-        d3.select("body").append("div")
-          .attr("class", "tooltip-size")
-          .style("position", "absolute")
-          .style("font-size", "14px")
-          .style("font-family", "'Open Sans', sans-serif")
-          .style("font-weight", "regular")
-          .style("background", "white")
-          .style("border", "2px solid #72757c")
-          .style("padding", "10px")
-          .style("pointer-events", "none")
-          .style("opacity", "0.9")
-          .style("border-radius", "10px") // radius
-          .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
-          .style("left", `${x + 20}px`)
-          .style("top", `${y + 20}px`)
-          .html(`<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`)
-          .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);;
-            })
-            .on("mouseout", function() {
-        d3.select(".tooltip-size").remove();
-      });
-
-    svg.append("line")
-      .attr("x1", 50)
-      .attr("y1", 50)
-      .attr("x2", 90)
-      .attr("y2", 10)
-      .attr("stroke", "white")
-      .attr("stroke-width", 1)
-      .attr("stroke-dasharray", "4 6");
-  }
-};
-
-const svgSize = d3.select("body")
-  .append("svg")
-  .attr("width", 100)
-  .attr("height", 100)
-  .style("background-color", "transparent")
-  .style("position", "absolute")
-  .style("left", "49%")
-  .style("top", "22%") // translate y axis
-  .style("transform", "translate(10%, -50%)");
-
-legendSize.draw(svgSize);
-
-
-// Group legendDepth, legendSize legends
-const legendGroup = d3.select("body")
-  .append("div")
-  .attr("class", "legend-group")
-  .style("display", "flex")
-  .style("justify-content", "center")
-  .style("padding-bottom", "30px")
-  .style("opacity", 0.9)
-  .style("transform", "scale(1.5)")
-  .style("position", "absolute")
-  .style("top", "23%")
-  .style("left", "49%")
-
-legendGroup.append(() => svgDepth.node())
-  .style("opacity", 0)
-  .transition()
-  .duration(1200)
-  .style("opacity", 1);
-
-legendGroup.append(() => svgSize.node())
-  .style("opacity", 0)
-  .transition()
-  .duration(1200)
-  .style("opacity", 1);
-
-
-// Legend title for depth
-const depthTitle = d3.select("body").append("div")
-  .style("position", "absolute")
-  .style("left", "calc(50% - 81px)")
-  .style("top", "calc(22% + 95px)")
-  .style("transform", "translate(-200%, -50%)")
-  .style("font-size", "14px")
-  .style("font-family", "'Open Sans', sans-serif")
-  .style("font-weight", "regular")
-  .style("color", "white")
-  .text("Depth");
-
-// Legend title for species volume
-const speciesVolumeTitle = d3.select("body").append("div")
-  .style("position", "absolute")
-  .style("left", "calc(50% + 8px)")
-  .style("top", "calc(22% + 95px)")
-  .style("transform", "translate(10%, -50%)")
-  .style("font-size", "14px")
-  .style("font-family", "'Open Sans', sans-serif")
-  .style("font-weight", "regular")
-  .style("color", "white")
-  .text("Species Volume");
-
-  //--------------------------------------------
-
-
-
-
-  // Apply Gaussian blur and darken to non-focused nodes
-  nodes.filter(node => node !== d)
-    .select("rect")
-    .style("filter", "url(#blur)")
-    .style("opacity", 0.5); // Darken non-focused nodes
-
-  // Remove blur and darkening from focused node
-  nodes.filter(node => node === d)
-    .select("rect")
-    .style("filter", "none")
-    .style("opacity", 1); // Return to normal opacity
-
-  // blur and darken focused labels
-  nodes.filter(node => node !== d)
-    .select("text")
-    .style("filter", "url(#blur)")
-    .style("opacity", 0.5); // Darken non-focused labels
-
-  // Remove blur and darkening from focused labels
-  nodes.filter(node => node === d)
-    .select("text")
-    .style("filter", "none")
-    .style("opacity", 1); // Return to normal opacity
-    
-
-  // Unblur and undarken all nodes when zooming out
-  d3.select("body").on("click", function(event) {
-    if (!event.target.closest("svg")) {
       svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
+
       nodes.transition().duration(750)
-        .attr("transform", d => `translate(${d.x0},${d.y0})`)
+        .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)})`)
         .select("rect")
-        .attr("width", d => d.x1 - d.x0)
-        .attr("height", d => d.y1 - d.y0)
-        .style("filter", "none")
-        .style("opacity", 1); // Return to normal opacity
+        .attr("width", node => x(node.x1) - x(node.x0))
+        .attr("height", node => y(node.y1) - y(node.y0));
 
       nodes.select("text")
         .transition().duration(750)
         .attr("x", 10)
         .attr("y", 25)
-        .style("font-size", d => {
-          const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+        .style("font-size", node => {
+          const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
           return fontSize < 10 ? "0px" : `${fontSize}px`;
         })
-        .style("filter", "none")
-        .style("opacity", 1) // Return to normal opacity
-        .text(d => d.data[0]);
+        .text(node => node.data[0]);
+      
+      //legend disappear when zoom in
+      legend.transition().duration(750).style("opacity", 0);
+
+      //tree map description disappear when zoom in
+      description.transition().duration(750).style("opacity", 0);
+      
+
+      // Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
+        // Depth
+        const legendDepth = {
+          gradientBar: {
+            x: 40,
+            y: 10,
+            width: 15,
+            height: 80,
+            colorStart: d3.color(colourScale(d.parent.data[0])).brighter(0),
+            colorEnd: d3.color(colourScale(d.parent.data[0])).darker(3)
+          }
+        };
+
+        const svgDepth = d3.select("body")
+          .append("svg")
+          .attr("width", 50)
+          .attr("height", 100)
+          .style("background-color", "transparent")
+          .style("position", "absolute")
+          .style("top", "22%")
+          .style("transform", "translate(-200%, -50%)");
+
+        const gradient = svgDepth.append("defs")
+          .append("linearGradient")
+          .attr("id", "gradientBar")
+          .attr("x1", "0%")
+          .attr("y1", "0%")
+          .attr("x2", "0%")
+          .attr("y2", "100%");
+
+        gradient.append("stop")
+          .attr("offset", "0%")
+          .attr("stop-color", legendDepth.gradientBar.colorStart);
+
+        gradient.append("stop")
+          .attr("offset", "100%")
+          .attr("stop-color", legendDepth.gradientBar.colorEnd);
+
+        svgDepth.append("rect")
+          .attr("x", legendDepth.gradientBar.x)
+          .attr("y", legendDepth.gradientBar.y)
+          .attr("width", legendDepth.gradientBar.width)
+          .attr("height", legendDepth.gradientBar.height)
+          .attr("fill", "url(#gradientBar)");
+
+        // Add hover effect for elaborate legend info
+        svgDepth.append("rect")
+          .attr("x", legendDepth.gradientBar.x)
+          .attr("y", legendDepth.gradientBar.y)
+          .attr("width", legendDepth.gradientBar.width)
+          .attr("height", legendDepth.gradientBar.height)
+          .attr("fill", "transparent")
+          .style("cursor", "pointer")
+          .on("mouseover", function(event) {
+            const [x, y] = d3.pointer(event);
+
+            d3.select("body").append("div")
+              .attr("class", "tooltip-depth")
+              .style("position", "absolute")
+              .style("font-size", "14px")
+              .style("font-family", "'Open Sans', sans-serif")
+              .style("font-weight", "regular")
+              .style("background", "white")
+              .style("border", "1.5px solid #72757c")
+              .style("padding", "10px")
+              .style("pointer-events", "none")
+              .style("opacity", "0.9")
+              .style("border-radius", "10px") // radius
+              .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
+              .style("left", `${x + 20}px`)
+              .style("top", `${y - 20}px`)
+              .html(`<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Cube within 20m intervals/bands.`)
+              .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
+          })
+          .on("mouseout", function() {
+            d3.select(".tooltip-depth").remove();
+          });
+
+        // Species population size legend
+        const legendSize = {
+          squares: [
+            { x: 10, y: 10, size: 80, color: d3.color(colourScale(d.parent.data[0])).brighter(0) },
+            { x: 10, y: 30, size: 60, color: d3.color(colourScale(d.parent.data[0])).darker(1) },
+            { x: 10, y: 50, size: 40, color: d3.color(colourScale(d.parent.data[0])).darker(2) }
+          ],
+          draw: function(svg) {
+            svg.selectAll("rect")
+              .data(this.squares)
+              .enter()
+              .append("rect")
+              .attr("x", d => d.x)
+              .attr("y", d => d.y)
+              .attr("width", d => d.size)
+              .attr("height", d => d.size)
+              .attr("fill", d => d.color)
+              .on("mouseover", function(event, d) {
+          const [x, y] = d3.pointer(event);
+          d3.select("body").append("div")
+            .attr("class", "tooltip-size")
+            .style("position", "absolute")
+            .style("font-size", "14px")
+            .style("font-family", "'Open Sans', sans-serif")
+            .style("font-weight", "regular")
+            .style("background", "white")
+            .style("border", "2px solid #72757c")
+            .style("padding", "10px")
+            .style("pointer-events", "none")
+            .style("opacity", "0.9")
+            .style("border-radius", "10px") // radius
+            .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
+            .style("left", `${x + 20}px`)
+            .style("top", `${y + 20}px`)
+            .html(`<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`)
+            .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
+              })
+              .on("mouseout", function() {
+          d3.select(".tooltip-size").remove();
+              });
+
+            svg.append("line")
+              .attr("x1", 50)
+              .attr("y1", 50)
+              .attr("x2", 90)
+              .attr("y2", 10)
+              .attr("stroke", "white")
+              .attr("stroke-width", 1)
+              .attr("stroke-dasharray", "4 6");
+          }
+        };
+
+        const svgSize = d3.select("body")
+          .append("svg")
+          .attr("width", 100)
+          .attr("height", 100)
+          .style("background-color", "transparent")
+          .style("position", "absolute")
+          .style("left", "49%")
+          .style("top", "22%") // translate y axis
+          .style("transform", "translate(10%, -50%)");
+
+        legendSize.draw(svgSize);
+
+        // Group legendDepth, legendSize legends
+        const legendGroup = d3.select("body")
+          .append("div")
+          .attr("class", "legend-group")
+          .style("display", "flex")
+          .style("justify-content", "center")
+          .style("padding-bottom", "30px")
+          .style("opacity", 0.9)
+          .style("transform", "scale(1.5)")
+          .style("position", "absolute")
+          .style("top", "23%")
+          .style("left", "49%");
+
+        legendGroup.append(() => svgDepth.node())
+          .style("opacity", 0)
+          .transition()
+          .duration(1200)
+          .style("opacity", 1);
+
+        legendGroup.append(() => svgSize.node())
+          .style("opacity", 0)
+          .transition()
+          .duration(1200)
+          .style("opacity", 1);
+
+        // Legend title for depth
+        const depthTitle = d3.select("body").append("div")
+          .style("position", "absolute")
+          .style("left", "calc(50% - 81px)")
+          .style("top", "calc(22% + 95px)")
+          .style("transform", "translate(-200%, -50%)")
+          .style("font-size", "14px")
+          .style("font-family", "'Open Sans', sans-serif")
+          .style("font-weight", "regular")
+          .style("color", "white")
+          .text("Depth");
+
+        // Legend title for species volume
+        const speciesVolumeTitle = d3.select("body").append("div")
+          .style("position", "absolute")
+          .style("left", "calc(50% + 8px)")
+          .style("top", "calc(22% + 95px)")
+          .style("transform", "translate(10%, -50%)")
+          .style("font-size", "14px")
+          .style("font-family", "'Open Sans', sans-serif")
+          .style("font-weight", "regular")
+          .style("color", "white")
+          .text("Species Volume");
 
 
-      //legend return when exit treemap
-      legend.transition().duration(750).style("opacity", 1);
 
-      //tree map description return when exit treemap
+    // Fetch detailed data and update the treemap
+    // const oceanName = d.data[0].replace(" Ocean", "").replace("North Sea", "North");
+    const detailedData = getDetailedData('Pacific');
+    console.log("Detailed Data:", detailedData);
+
+    if (Object.keys(detailedData).length > 0) {
+      const detailedRoot = d3.hierarchy({
+        children: Object.entries(detailedData).map(([key, value]) => ({
+      name: key,
+      children: Array.from(value, ([depthRange, count]) => ({
+        name: getDepthRange(depthRange),
+        value: count
+      }))
+        }))
+      })
+      .sum(d => d.value)
+      .sort((a, b) => b.value - a.value);
+
+      console.log("Detailed Root:", detailedRoot);
+
+      treemapLayout(detailedRoot);
+
+      const detailedNodes = svg.selectAll(".detailed-node")
+        .data(detailedRoot.leaves())
+        .enter()
+        .append("g")
+        .attr("class", "detailed-node")
+        .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)})`);
+
+      detailedNodes.append("rect")
+        .attr("width", node => x(node.x1) - x(node.x0))
+        .attr("height", node => y(node.y1) - y(node.y0))
+        .attr("fill", node => {
+          const parentColor = colourScale(d.parent.data[0]);
+          const shade = d3.scaleLinear()
+            .domain([0, (detailedRoot.children ? detailedRoot.children.length : 1) - 1])
+            .range([0.3, 0.7]); // Make the shade range darker and wider
+          return d3.color(parentColor).darker(shade(detailedRoot.children ? detailedRoot.children.indexOf(node) : 1));
+        })
+        .attr("fill-opacity", 1)
+        .attr("stroke", "none");
+
+        detailedNodes.append("text")
+          .attr("x", 10)
+          .attr("y", 25)
+          .style("font-family", "'Open Sans', sans-serif")
+          .style("font-weight", "regular")
+          .style("fill", "white")
+          .style("font-size", node => {
+            const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
+            return fontSize < 10 ? "0px" : `${fontSize}px`;
+          })
+          .text(node => getDepthRange(node.data.name))
+          .each(function(node) {
+            const bbox = this.getBBox();
+            if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
+              d3.select(this).remove();
+            }
+          });
+
+          
+        // Add fade-in and scale animation for the detailed nodes
+        setTimeout(() => {
+          detailedNodes.style("opacity", 0)
+            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(0.1)`)
+            .transition()
+            .duration(1500)
+            .style("opacity", 0.9)
+            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(1)`);
+        }, 2000);
+      }
+    }
+
+    
+    nodes.on("click", function(event, d) {
+      zoom(d, width, height, margin, svg, nodes);
+    });
+
+            // // Remove secondary legend when zoomed out
+            // svgSize.transition().duration(400).style("opacity", 0).remove();
+            // svgDepth.transition().duration(400).style("opacity", 0).remove();
+    
+            // // Remove legend titles with fade out animation when zoomed out
+            // depthTitle.transition().duration(400).style("opacity", 0).remove();
+            // speciesVolumeTitle.transition().duration(400).style("opacity", 0).remove();
+
+
+    d3.select("body").on("click", function(event) {
+      if (!event.target.closest("svg")) {
+        svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
+        nodes.transition().duration(750)
+          .attr("transform", d => `translate(${d.x0},${d.y0})`)
+          .select("rect")
+          .attr("width", d => d.x1 - d.x0)
+          .attr("height", d => d.y1 - d.y0)
+          .style("filter", "none");
+          
+
+        nodes.select("text")
+          .transition().duration(750)
+          .attr("x", 10)
+          .attr("y", 25)
+          .style("font-size", d => {
+            const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+            return fontSize < 10 ? "0px" : `${fontSize}px`;
+          })
+          .text(d => d.data[0]);
+    
+          
+        // Remove detailed nodes
+        svg.selectAll(".detailed-node").remove();
+
+          //--------------------------------------------
+
+
+    //legend return when exit treemap
+    legend.transition().duration(750).style("opacity", 1);
+
+    //tree map description return when exit treemap
     description.transition().duration(750).style("opacity", 1);
 
-    // Remove secondary legend when zoomed out
-    svgSize.transition().duration(400).style("opacity", 0).remove();
-    svgDepth.transition().duration(400).style("opacity", 0).remove();
+      }
+      
+    });
 
-    // Remove legend titles with fade out animation when zoomed out
-    depthTitle.transition().duration(400).style("opacity", 0).remove();
-    speciesVolumeTitle.transition().duration(400).style("opacity", 0).remove();
 
-    }
-  });
+
+  // // Hide the background fish when zoomed in
+  // d3.selectAll(".fish-container").style("display", "none");
+
+  // // Show the background fish when zoomed out
+  // d3.select("body").on("click", function(event) {
+  //   if (!event.target.closest("svg")) {
+  //     d3.selectAll(".fish-container").style("display", "block");
+
+  // // Disable hover effect and remove box to display total number + proportion of species when zoomed in
+  // nodes.on("mouseover", null).on("mouseout", null);
+  // body.select(".tooltip").remove();
+
+
+
 
   //--------------------------------------------
 
-  //MOVE ALL THESE CRAP BELOW ZOOM FUNCTION
 
   // Randomized fishes path appear when zoom in and confined to each rectangle, swimming like in an aquarium, scaled to 40% of its original size - but in front of the treemap and the fishes behind the treemap all disappear but reappear when zoom out
 
@@ -1146,34 +1179,6 @@ const speciesVolumeTitle = d3.select("body").append("div")
   // });
 
 
-//in progress - depth as the third level of the hierarchy
-
-  // On zoom, add d => d.depth + hover info + fragment animation for depth
-  nodes.transition(t)
-    .attr("transform", d => `translate(${d.x0},${d.y0})`)
-    .select("rect")
-    .attr("width", d => d.x1 - d.x0)
-    .attr("height", d => d.y1 - d.y0)
-    .attr("fill", d => {
-      const parentColor = colourScale(d.parent.data[0]);
-      const shade = d3.scaleLinear()
-        .domain([0, d.parent.children.length - 1])
-        .range([0.1, 0.9]); // Adjust the range to change the darkness of the shade
-      return d3.color(parentColor).darker(shade(d.parent.children.indexOf(d)));
-    });
-
-  nodes.select("text")
-    .transition(t)
-    .attr("x", 10)
-    .attr("y", 25)
-    .style("font-size", d => {
-      const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
-      return fontSize < 10 ? "0px" : `${fontSize}px`;
-    })
-    .text(d => `${d.data[0]} (Depth: ${d.depth})`);
-
-  d3.select(this).select("text")
-}
 
 
 
@@ -1217,43 +1222,6 @@ const speciesVolumeTitle = d3.select("body").append("div")
 //     .on("mouseout", function() {
 //     d3.select(".tooltip-depth").remove();
 //   });
-
-
-// Add blur filter to SVG
-svg.append("defs")
-  .append("filter")
-  .attr("id", "blur")
-  .append("feGaussianBlur")
-  .attr("stdDeviation", 2);
-
-// Add zoom event listener to nodes
-nodes.on("click", function(event, d) {
-  console.log("Node clicked:", d);
-  zoom(d, width, height, margin, svg, nodes);
-});
-
-// Add click event listener to exit zoom when clicking outside the treemap
-d3.select("body").on("click", function(event) {
-  if (!event.target.closest("svg")) {
-    svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
-    nodes.transition().duration(750)
-      .attr("transform", d => `translate(${d.x0},${d.y0})`)
-      .select("rect")
-      .attr("width", d => d.x1 - d.x0)
-      .attr("height", d => d.y1 - d.y0)
-      .style("filter", "none");
-
-    nodes.select("text")
-      .transition().duration(750)
-      .attr("x", 10)
-      .attr("y", 25)
-      .style("font-size", d => {
-        const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
-        return fontSize < 10 ? "0px" : `${fontSize}px`;
-      })
-      .text(d => d.data[0]);
-  }
-});
 
 //--------------------------------------------
 
