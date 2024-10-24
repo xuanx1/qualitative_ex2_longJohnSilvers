@@ -783,22 +783,21 @@ description.style("opacity", 0)
         .text(node => node.data[0]);
       
       //legend disappear when zoom in
-      legend.transition().duration(750).style("opacity", 0);
+      legend.transition().duration(500).style("opacity", 0);
 
       //tree map description disappear when zoom in
-      description.transition().duration(750).style("opacity", 0);
+      description.transition().duration(500).style("opacity", 0);
       
-
       // Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
         // Depth
         const legendDepth = {
           gradientBar: {
-            x: 40,
-            y: 10,
-            width: 15,
-            height: 80,
-            colorStart: d3.color(colourScale(d.parent.data[0])).brighter(0),
-            colorEnd: d3.color(colourScale(d.parent.data[0])).darker(3)
+        x: 40,
+        y: 10,
+        width: 15,
+        height: 80,
+        colorStart: d3.color(colourScale(d.parent.data[0])).brighter(0),
+        colorEnd: d3.color(colourScale(d.parent.data[0])).darker(3)
           }
         };
 
@@ -843,79 +842,79 @@ description.style("opacity", 0)
           .attr("fill", "transparent")
           .style("cursor", "pointer")
           .on("mouseover", function(event) {
-            const [x, y] = d3.pointer(event);
+        const [x, y] = d3.pointer(event);
 
-            d3.select("body").append("div")
-              .attr("class", "tooltip-depth")
-              .style("position", "absolute")
-              .style("font-size", "14px")
-              .style("font-family", "'Open Sans', sans-serif")
-              .style("font-weight", "regular")
-              .style("background", "white")
-              .style("border", "1.5px solid #72757c")
-              .style("padding", "10px")
-              .style("pointer-events", "none")
-              .style("opacity", "0.9")
-              .style("border-radius", "10px") // radius
-              .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
-              .style("left", `${x + 20}px`)
-              .style("top", `${y - 20}px`)
-              .html(`<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Cube within 20m intervals/bands.`)
-              .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
+        d3.select("body").append("div")
+          .attr("class", "tooltip-depth")
+          .style("position", "absolute")
+          .style("font-size", "14px")
+          .style("font-family", "'Open Sans', sans-serif")
+          .style("font-weight", "regular")
+          .style("background", "white")
+          .style("border", "1.5px solid #72757c")
+          .style("padding", "10px")
+          .style("pointer-events", "none")
+          .style("opacity", "0.9")
+          .style("border-radius", "10px") // radius
+          .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
+          .style("left", `${x + 20}px`)
+          .style("top", `${y - 20}px`)
+          .html(`<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Cube within 20m intervals/bands.`)
+          .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
           })
           .on("mouseout", function() {
-            d3.select(".tooltip-depth").remove();
+        d3.select(".tooltip-depth").remove();
           });
 
         // Species population size legend
         const legendSize = {
           squares: [
-            { x: 10, y: 10, size: 80, color: d3.color(colourScale(d.parent.data[0])).brighter(0) },
-            { x: 10, y: 30, size: 60, color: d3.color(colourScale(d.parent.data[0])).darker(1) },
-            { x: 10, y: 50, size: 40, color: d3.color(colourScale(d.parent.data[0])).darker(2) }
+        { x: 10, y: 10, size: 80, color: d3.color(colourScale(d.parent.data[0])).brighter(0) },
+        { x: 10, y: 30, size: 60, color: d3.color(colourScale(d.parent.data[0])).darker(1) },
+        { x: 10, y: 50, size: 40, color: d3.color(colourScale(d.parent.data[0])).darker(2) }
           ],
           draw: function(svg) {
-            svg.selectAll("rect")
-              .data(this.squares)
-              .enter()
-              .append("rect")
-              .attr("x", d => d.x)
-              .attr("y", d => d.y)
-              .attr("width", d => d.size)
-              .attr("height", d => d.size)
-              .attr("fill", d => d.color)
-              .on("mouseover", function(event, d) {
+        svg.selectAll("rect")
+          .data(this.squares)
+          .enter()
+          .append("rect")
+          .attr("x", d => d.x)
+          .attr("y", d => d.y)
+          .attr("width", d => d.size)
+          .attr("height", d => d.size)
+          .attr("fill", d => d.color)
+          .on("mouseover", function(event, d) {
           const [x, y] = d3.pointer(event);
           d3.select("body").append("div")
-            .attr("class", "tooltip-size")
-            .style("position", "absolute")
-            .style("font-size", "14px")
-            .style("font-family", "'Open Sans', sans-serif")
-            .style("font-weight", "regular")
-            .style("background", "white")
-            .style("border", "2px solid #72757c")
-            .style("padding", "10px")
-            .style("pointer-events", "none")
-            .style("opacity", "0.9")
-            .style("border-radius", "10px") // radius
-            .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
-            .style("left", `${x + 20}px`)
-            .style("top", `${y + 20}px`)
-            .html(`<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`)
-            .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
-              })
-              .on("mouseout", function() {
+        .attr("class", "tooltip-size")
+        .style("position", "absolute")
+        .style("font-size", "14px")
+        .style("font-family", "'Open Sans', sans-serif")
+        .style("font-weight", "regular")
+        .style("background", "white")
+        .style("border", "2px solid #72757c")
+        .style("padding", "10px")
+        .style("pointer-events", "none")
+        .style("opacity", "0.9")
+        .style("border-radius", "10px") // radius
+        .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
+        .style("left", `${x + 20}px`)
+        .style("top", `${y + 20}px`)
+        .html(`<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`)
+        .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`);
+          })
+          .on("mouseout", function() {
           d3.select(".tooltip-size").remove();
-              });
+          });
 
-            svg.append("line")
-              .attr("x1", 50)
-              .attr("y1", 50)
-              .attr("x2", 90)
-              .attr("y2", 10)
-              .attr("stroke", "white")
-              .attr("stroke-width", 1)
-              .attr("stroke-dasharray", "4 6");
+        svg.append("line")
+          .attr("x1", 50)
+          .attr("y1", 50)
+          .attr("x2", 90)
+          .attr("y2", 10)
+          .attr("stroke", "white")
+          .attr("stroke-width", 1)
+          .attr("stroke-dasharray", "4 6");
           }
         };
 
@@ -941,7 +940,7 @@ description.style("opacity", 0)
           .style("opacity", 0.9)
           .style("transform", "scale(1.5)")
           .style("position", "absolute")
-          .style("top", "23%")
+          .style("top", "19%")
           .style("left", "49%");
 
         legendGroup.append(() => svgDepth.node())
@@ -954,37 +953,12 @@ description.style("opacity", 0)
           .style("opacity", 0)
           .transition()
           .duration(1200)
-          .style("opacity", 1);
-
-        // Legend title for depth
-        const depthTitle = d3.select("body").append("div")
-          .style("position", "absolute")
-          .style("left", "calc(50% - 81px)")
-          .style("top", "calc(22% + 95px)")
-          .style("transform", "translate(-200%, -50%)")
-          .style("font-size", "14px")
-          .style("font-family", "'Open Sans', sans-serif")
-          .style("font-weight", "regular")
-          .style("color", "white")
-          .text("Depth");
-
-        // Legend title for species volume
-        const speciesVolumeTitle = d3.select("body").append("div")
-          .style("position", "absolute")
-          .style("left", "calc(50% + 8px)")
-          .style("top", "calc(22% + 95px)")
-          .style("transform", "translate(10%, -50%)")
-          .style("font-size", "14px")
-          .style("font-family", "'Open Sans', sans-serif")
-          .style("font-weight", "regular")
-          .style("color", "white")
-          .text("Species Volume");
+          .style("opacity", 1);          
 
 
 
     // Fetch detailed data and update the treemap
-    // const oceanName = d.data[0].replace(" Ocean", "").replace("North Sea", "North");
-    const detailedData = getDetailedData('Pacific');
+    const detailedData = getDetailedData('Pacific', 'Atlantic', 'Indian', 'South', 'North', 'Arctic');
     console.log("Detailed Data:", detailedData);
 
     if (Object.keys(detailedData).length > 0) {
@@ -1004,54 +978,71 @@ description.style("opacity", 0)
 
       treemapLayout(detailedRoot);
 
-      const detailedNodes = svg.selectAll(".detailed-node")
-        .data(detailedRoot.leaves())
-        .enter()
-        .append("g")
-        .attr("class", "detailed-node")
-        .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)})`);
+      // const detailedNodes = svg.selectAll(".detailed-node")
+      //   .data(detailedRoot.leaves())
+      //   .enter()
+      //   .append("g")
+      //   .attr("class", "detailed-node")
+      //   .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)})`);
 
-      detailedNodes.append("rect")
-        .attr("width", node => x(node.x1) - x(node.x0))
-        .attr("height", node => y(node.y1) - y(node.y0))
-        .attr("fill", node => {
-          const parentColor = colourScale(d.parent.data[0]);
-          const shade = d3.scaleLinear()
-            .domain([0, (detailedRoot.children ? detailedRoot.children.length : 1) - 1])
-            .range([0.3, 0.7]); // Make the shade range darker and wider
-          return d3.color(parentColor).darker(shade(detailedRoot.children ? detailedRoot.children.indexOf(node) : 1));
-        })
-        .attr("fill-opacity", 1)
-        .attr("stroke", "none");
+      // detailedNodes.append("rect")
+      //   .attr("width", node => x(node.x1) - x(node.x0))
+      //   .attr("height", node => y(node.y1) - y(node.y0))
+      //   .attr("fill", node => {
+      //     const parentColor = colourScale(d.parent.data[0]);
+      //     const shade = d3.scaleLinear()
+      //   .domain([0, (detailedRoot.children ? detailedRoot.children.length : 1) - 1])
+      //   .range([0.3, 0.7]); // Make the shade range darker and wider
+      //     return d3.color(parentColor).darker(shade(detailedRoot.children ? detailedRoot.children.indexOf(node) : 1));
+      //   })
+      //   .attr("fill-opacity", 1)
+      //   .attr("stroke", "none");
 
-        detailedNodes.append("text")
-          .attr("x", 10)
-          .attr("y", 25)
-          .style("font-family", "'Open Sans', sans-serif")
-          .style("font-weight", "regular")
-          .style("fill", "white")
-          .style("font-size", node => {
-            const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
-            return fontSize < 10 ? "0px" : `${fontSize}px`;
-          })
-          .text(node => getDepthRange(node.data.name))
-          .each(function(node) {
-            const bbox = this.getBBox();
-            if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
-              d3.select(this).remove();
-            }
-          });
+      // detailedNodes.append("text")
+      //   .attr("x", 10)
+      //   .attr("y", 25)
+      //   .style("font-family", "'Open Sans', sans-serif")
+      //   .style("font-weight", "regular")
+      //   .style("fill", "white")
+      //   .style("font-size", node => {
+      //     const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
+      //     return fontSize < 10 ? "0px" : `${fontSize}px`;
+      //   })
+      //   .text(node => getDepthRange(node.data.name))
+      //   .each(function(node) {
+      //     const bbox = this.getBBox();
+      //     if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
+      //   d3.select(this).remove();
+      //     }
+      //   });
 
-          
-        // Add fade-in and scale animation for the detailed nodes
-        setTimeout(() => {
-          detailedNodes.style("opacity", 0)
-            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(0.1)`)
-            .transition()
-            .duration(1500)
-            .style("opacity", 0.9)
-            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(1)`);
-        }, 2000);
+      // Add fade-in and scale animation for the detailed nodes
+      // setTimeout(() => {
+      //   detailedNodes.style("opacity", 0)
+      //     .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(0.1)`)
+      //     .transition()
+      //     .duration(1500)
+      //     .style("opacity", 0.9)
+      //     .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(1)`);
+      // }, 2000);
+
+      //   detailedNodes.append("text")
+      //     .attr("x", 10)
+      //     .attr("y", 25)
+      //     .style("font-family", "'Open Sans', sans-serif")
+      //     .style("font-weight", "regular")
+      //     .style("fill", "white")
+      //     .style("font-size", node => {
+      //       const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
+      //       return fontSize < 10 ? "0px" : `${fontSize}px`;
+      //     })
+      //     .text(node => getDepthRange(node.data.name))
+      //     .each(function(node) {
+      //       const bbox = this.getBBox();
+      //       if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
+      //         d3.select(this).remove();
+      //       }
+      //     });
       }
     }
 
@@ -1060,53 +1051,40 @@ description.style("opacity", 0)
       zoom(d, width, height, margin, svg, nodes);
     });
 
-            // // Remove secondary legend when zoomed out
-            // svgSize.transition().duration(400).style("opacity", 0).remove();
-            // svgDepth.transition().duration(400).style("opacity", 0).remove();
-    
-            // // Remove legend titles with fade out animation when zoomed out
-            // depthTitle.transition().duration(400).style("opacity", 0).remove();
-            // speciesVolumeTitle.transition().duration(400).style("opacity", 0).remove();
-
-
     d3.select("body").on("click", function(event) {
       if (!event.target.closest("svg")) {
-        svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
-        nodes.transition().duration(750)
-          .attr("transform", d => `translate(${d.x0},${d.y0})`)
-          .select("rect")
-          .attr("width", d => d.x1 - d.x0)
-          .attr("height", d => d.y1 - d.y0)
-          .style("filter", "none");
-          
+      svg.transition().duration(750).attr("viewBox", `0 0 ${width} ${height}`);
+      nodes.transition().duration(750)
+        .attr("transform", d => `translate(${d.x0},${d.y0})`)
+        .select("rect")
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0)
+        .style("filter", "none");
 
-        nodes.select("text")
-          .transition().duration(750)
-          .attr("x", 10)
-          .attr("y", 25)
-          .style("font-size", d => {
-            const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
-            return fontSize < 10 ? "0px" : `${fontSize}px`;
-          })
-          .text(d => d.data[0]);
-    
-          
-        // Remove detailed nodes
-        svg.selectAll(".detailed-node").remove();
+      nodes.select("text")
+        .transition().duration(750)
+        .attr("x", 10)
+        .attr("y", 25)
+        .style("font-size", d => {
+        const fontSize = Math.min((d.x1 - d.x0) / 5, (d.y1 - d.y0) / 5, 16);
+        return fontSize < 10 ? "0px" : `${fontSize}px`;
+        })
+        .text(d => d.data[0]);
 
-          //--------------------------------------------
+      // Remove detailed nodes
+      svg.selectAll(".detailed-node").remove();
 
+      // Remove secondary legend when zoomed out
+      d3.selectAll(".legend-group, .tooltip-depth, .tooltip-size").transition().duration(400).style("opacity", 0).remove();
 
-    //legend return when exit treemap
-    legend.transition().duration(750).style("opacity", 1);
+      // legend return when exit treemap
+      legend.transition().duration(750).style("opacity", 1);
 
-    //tree map description return when exit treemap
-    description.transition().duration(750).style("opacity", 1);
-
+      // tree map description return when exit treemap
+      description.transition().duration(750).style("opacity", 1);
       }
-      
     });
-
+          
 
 
   // // Hide the background fish when zoomed in
@@ -1116,112 +1094,98 @@ description.style("opacity", 0)
   // d3.select("body").on("click", function(event) {
   //   if (!event.target.closest("svg")) {
   //     d3.selectAll(".fish-container").style("display", "block");
-
-  // // Disable hover effect and remove box to display total number + proportion of species when zoomed in
-  // nodes.on("mouseover", null).on("mouseout", null);
-  // body.select(".tooltip").remove();
 
 
 
 
   //--------------------------------------------
+  //after one click on a node and zooming in, populate the node with Randomized fishes paths that are swimming inside the node, like in an aquarium based on the number of objects in the node, fish paths are scaled to 200% of its original size, in front of the treemap. The fishes behind the treemap all disappear but will reappear when zoom out. whereas the fishes inside the node will disappear when zoom out. each fish here is linked to the url in the fish json.
+
+  // after clicking on a node and zoom in, Randomized fishes path fade in swimming while confined within the node, like in an aquarium, scaled to 150% of its original size - but in front of the treemap, each fish here is linked to the url in the fish json and the fishes behind the treemap all disappear but will reappear when zoom out.
+  function createZoomedFish(node) {
+    const fishContainer = d3.select("body").append("div")
+      .attr("class", "zoomed-fish-container")
+      .style("position", "absolute")
+      .style("top", `${node.y0 + (node.y1 - node.y0) * 0.1}px`)
+      .style("left", `${node.x0 + (node.x1 - node.x0) * 0.1}px`)
+      .style("width", `${(node.x1 - node.x0) * 0.8}px`)
+      .style("height", `${(node.y1 - node.y0) * 0.8}px`)
+      .style("pointer-events", "none")
+      .style("z-index", 1); // fishes in front of the treemap
+
+    for (let i = 0; i < 5; i++) {
+      const fish = fishContainer.append("img")
+        .attr("src", possiblePaths[Math.floor(Math.random() * possiblePaths.length)])
+        .style("position", "absolute")
+        .style("width", `${Math.random() * 50 + 120}px`) // Randomize size, scaled to 200%
+        .style("height", "auto")
+        .style("top", `${Math.random() * 100}%`)
+        .style("left", `${Math.random() * 100}%`)
+        .style("filter", `hue-rotate(${Math.random() * 360}deg)`) // Randomize color
+        .style("transition", "transform 5s linear");
+
+      animateFish(fish);
+    }
+  }
 
 
-  // Randomized fishes path appear when zoom in and confined to each rectangle, swimming like in an aquarium, scaled to 40% of its original size - but in front of the treemap and the fishes behind the treemap all disappear but reappear when zoom out
+  nodes.on("click", function(event, d) {
+    d3.selectAll(".fish-container").style("display", "none"); // Hide background fish
+    d3.selectAll(".zoomed-fish-container").remove(); // Remove previous zoomed fish
+    createZoomedFish(d);
+    zoom(d, width, height, margin, svg, nodes);
+  });
 
-  // // Function to create swimming fish within a node
-  // function createSwimmingFishInNode(node) {
-  //   const fishContainer = node.append("div")
-  //     .attr("class", "fish-container")
+  d3.select("body").on("click", function(event) {
+    if (!event.target.closest("svg")) {
+      d3.selectAll(".zoomed-fish-container").remove(); // Remove zoomed fish
+      d3.selectAll(".fish-container").style("display", "block"); // Show background fish
+    }
+  });
+
+
+
+
+
+
+  //  // Hover effect to display fish info
+  //  nodes.on("mouseover", function(event, d) {
+  //   d3.select(this).select("rect")
+  //     .attr("stroke", "#ac513b")
+  //     .attr("stroke-width", 4);
+
+  //   const [x, y] = d3.pointer(event);
+
+  //   body.append("div") //popup window for randomised fish info - thumbnail + common names + scientific names(italics) + archetypes + depth + map
+  //     .attr("class", "tooltip")
   //     .style("position", "absolute")
-  //     .style("top", 0)
-  //     .style("left", 0)
-  //     .style("width", `${node.node().getBBox().width}px`)
-  //     .style("height", `${node.node().getBBox().height}px`)
+  //     .style("font-size", "14px")
+  //     .style("font-family", "'Open Sans', sans-serif")
+  //     .style("font-weight", "regular")
+  //     .style("background", "white")
+  //     .style("border", "1.5px solid #72757c")
+  //     .style("padding", "10px")
   //     .style("pointer-events", "none")
-  //     .style("z-index", 1); // fishes in front of the treemap
+  //     .style("opacity", "0.9")
+  //     .style("border-radius", "10px") // Add 10px radius
+  //     .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // Add drop shadow
+  //     .style("left", `${event.pageX + 20}px`)
+  //     .style("top", `${event.pageY + 20}px`)
+  //     .html(`
+  //       <strong style="border-radius: 5px">${imgv2.thumbnail}</strong>
+  //       <br/><strong style="color: #098094;">${common_name}</strong>
+  //       <br/><i style="color: #808080; font-size: 10pt;">${title}</i>
+  //       <br/>Archetype: <strong style="color: #098094;">${newGroup}%</strong>
+  //       <br/>Depth: <strong style="color: #098094;">${depth} m (convert ot feet)ft</strong>
+  //       <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${longitude}/${latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;"></img>
+  //     `);
+  // })
+  // .on("mouseout", function() {
+  //   d3.select(this).select("rect")
+  //     .attr("stroke", "none");
 
-  //   for (let i = 0; i < 3; i++) {
-  //     const fish = fishContainer.append("img")
-  //       .attr("src", possiblePaths[Math.floor(Math.random() * possiblePaths.length)])
-  //       .style("position", "absolute")
-  //       .style("width", `${Math.random() * 20 + 30}px`) // Randomize size, scaled to 40%
-  //       .style("height", "auto")
-  //       .style("top", `${Math.random() * 100}%`)
-  //       .style("left", `${Math.random() * 100}%`)
-  //       .style("filter", `hue-rotate(${Math.random() * 360}deg)`) // Randomize color
-  //       .style("transition", "transform 5s linear");
-
-  //     animateFishInNode(fish, node);
-  //   }
-  // }
-
-  // function animateFishInNode(fish, node) {
-  //   const newTop = `${Math.random() * 100}%`;
-  //   const newLeft = `${Math.random() * 100}%`;
-
-  //   fish.style("transform", `translate(${newLeft}, ${newTop})`);
-
-  //   setTimeout(() => animateFishInNode(fish, node), 5000);
-  // }
-
-  // // Create swimming fish in the clicked node
-  // createSwimmingFishInNode(d3.select(this));
-
-  // // Hide the background fish when zoomed in
-  // d3.selectAll(".fish-container").style("display", "none");
-
-  // // Show the background fish when zoomed out
-  // d3.select("body").on("click", function(event) {
-  //   if (!event.target.closest("svg")) {
-  //     d3.selectAll(".fish-container").style("display", "block");
-  //   }
+  //   body.select(".tooltip").remove();
   // });
-
-
-
-
-
-// // Add hover effect to show each fish's description
-// svgDepth.append("rect")
-//   .attr("x", legendDepth.gradientBar.x)
-//   .attr("y", legendDepth.gradientBar.y)
-//   .attr("width", legendDepth.gradientBar.width)
-//   .attr("height", legendDepth.gradientBar.height)
-//   .attr("fill", "transparent")
-//   .style("cursor", "pointer")
-//   .on("mouseover", function(event) {
-//     const [x, y] = d3.pointer(event);
-
-//     d3.select("body").append("div")
-//       .attr("class", "tooltip-depth")
-//       .style("position", "absolute")
-//       .style("font-size", "14px")
-//       .style("font-family", "'Open Sans', sans-serif")
-//       .style("font-weight", "regular")
-//       .style("background", "white")
-//       .style("border", "1.5px solid #72757c")
-//       .style("padding", "10px")
-//       .style("pointer-events", "none")
-//       .style("opacity", "0.9")
-//       .style("border-radius", "10px") // radius
-//       .style("box-shadow", "0px 5px 5px rgba(0, 0, 0, 0.3)") // drop shadow
-//       .style("left", `${x + 20}px`)
-//       .style("top", `${y - 20}px`)
-//       .html(`
-//         <strong style="color: #098094;">Name: </strong> ${d.common_name}
-//         <br/>
-//         <strong style="color: #098094;">Archetype: </strong> ${d.newGroup}
-//         <br/>
-//         <strong style="color: #098094;">Ocean: </strong> ${d.ocean}
-//         <br/>
-//         <strong style="color: #098094;">Depth: </strong> ${d.depth}
-//         <br/>`)
-//       .style("transform", `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`); //fetch img thumbnail
-//     })
-//     .on("mouseout", function() {
-//     d3.select(".tooltip-depth").remove();
-//   });
 
 //--------------------------------------------
 
