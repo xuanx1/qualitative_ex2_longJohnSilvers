@@ -1066,71 +1066,72 @@ async function fetchData() {
 
         treemapLayout(detailedRoot);
 
-        // const detailedNodes = svg.selectAll(".detailed-node")
-        //   .data(detailedRoot.leaves())
-        //   .enter()
-        //   .append("g")
-        //   .attr("class", "detailed-node")
-        //   .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)})`);
+        const detailedNodes = svg.selectAll(".detailed-node")
+          .data(detailedRoot.leaves())
+          .enter()
+          .append("g")
+          .attr("class", "detailed-node")
+          .attr("transform", node => `translate(${node.x0},${node.y0})`);
 
-        // detailedNodes.append("rect")
-        //   .attr("width", node => x(node.x1) - x(node.x0))
-        //   .attr("height", node => y(node.y1) - y(node.y0))
-        //   .attr("fill", node => {
-        //     const parentColor = colourScale(d.parent.data[0]);
-        //     const shade = d3.scaleLinear()
-        //   .domain([0, (detailedRoot.children ? detailedRoot.children.length : 1) - 1])
-        //   .range([0.3, 0.7]); // Make the shade range darker and wider
-        //     return d3.color(parentColor).darker(shade(detailedRoot.children ? detailedRoot.children.indexOf(node) : 1));
-        //   })
-        //   .attr("fill-opacity", 1)
-        //   .attr("stroke", "none");
 
-        // detailedNodes.append("text")
-        //   .attr("x", 10)
-        //   .attr("y", 25)
-        //   .style("font-family", "'Open Sans', sans-serif")
-        //   .style("font-weight", "regular")
-        //   .style("fill", "white")
-        //   .style("font-size", node => {
-        //     const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
-        //     return fontSize < 10 ? "0px" : `${fontSize}px`;
-        //   })
-        //   .text(node => getDepthRange(node.data.name))
-        //   .each(function(node) {
-        //     const bbox = this.getBBox();
-        //     if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
-        //   d3.select(this).remove();
-        //     }
-        //   });
+        detailedNodes.append("rect")
+          .attr("width", node => node.x1 - node.x0)
+          .attr("height", node => node.y1 - node.y0)
+          .attr("fill", node => {
+            const parentColor = colourScale(node.parent.data.name);
+            const shade = d3.scaleLinear()
+          .domain([0, (detailedRoot.children ? detailedRoot.children.length : 1) - 1])
+          .range([0.3, 0.7]); // Make the shade range darker and wider
+            return d3.color(parentColor).darker(shade(detailedRoot.children ? detailedRoot.children.indexOf(node) : 1));
+          })
+          .attr("fill-opacity", 1)
+          .attr("stroke", "none");
 
-        // // Add fade-in and scale animation for the detailed nodes
-        // setTimeout(() => {
-        //   detailedNodes.style("opacity", 0)
-        //     .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(0.1)`)
-        //     .transition()
-        //     .duration(1500)
-        //     .style("opacity", 0.9)
-        //     .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(1)`);
-        // }, 2000);
+        detailedNodes.append("text")
+          .attr("x", 10)
+          .attr("y", 25)
+          .style("font-family", "'Open Sans', sans-serif")
+          .style("font-weight", "regular")
+          .style("fill", "white")
+          .style("font-size", node => {
+            const fontSize = Math.min((node.x1 - node.x0) / 5, (node.y1 - node.y0) / 5, 16);
+            return fontSize < 10 ? "0px" : `${fontSize}px`;
+          })
+          .text(node => getDepthRange(node.data.value))
+          .each(function(node) {
+            const bbox = this.getBBox();
+      if (bbox.width > (node.x1 - node.x0) || bbox.height > (node.y1 - node.y0)) {
+        d3.select(this).remove();
+            }
+          });
 
-        //   detailedNodes.append("text")
-        //     .attr("x", 10)
-        //     .attr("y", 25)
-        //     .style("font-family", "'Open Sans', sans-serif")
-        //     .style("font-weight", "regular")
-        //     .style("fill", "white")
-        //     .style("font-size", node => {
-        //       const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
-        //       return fontSize < 10 ? "0px" : `${fontSize}px`;
-        //     })
-        //     .text(node => getDepthRange(node.data.name))
-        //     .each(function(node) {
-        //       const bbox = this.getBBox();
-        //       if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
-        //         d3.select(this).remove();
-        //       }
-        //     });
+        // Add fade-in and scale animation for the detailed nodes
+        setTimeout(() => {
+          detailedNodes.style("opacity", 0)
+            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(0.1)`)
+            .transition()
+            .duration(1500)
+            .style("opacity", 0.9)
+            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(1)`);
+        }, 2000);
+
+          detailedNodes.append("text")
+            .attr("x", 10)
+            .attr("y", 25)
+            .style("font-family", "'Open Sans', sans-serif")
+            .style("font-weight", "regular")
+            .style("fill", "white")
+            .style("font-size", node => {
+              const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
+              return fontSize < 10 ? "0px" : `${fontSize}px`;
+            })
+            .text(node => getDepthRange(node.data.name))
+            .each(function(node) {
+              const bbox = this.getBBox();
+              if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
+                d3.select(this).remove();
+              }
+            });
       }
     }
 
@@ -1239,13 +1240,13 @@ async function fetchData() {
               .html(
                 //find a way to make it flexible
                 `
-              <a href="${imgData.record_link}" target="_blank">
-              <img src="${imgData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
-              <br/><strong style="color: #098094;">${fishData.common_name}</strong>
-              <br/><i style="color: #808080; font-size: 10pt;">${fishData.title}</i>
-              <br/>Archetype: <strong style="color: #098094;">${fishData.newGroup}</strong>
-              <br/>Depth: <strong style="color: #098094;">${fishData.depth} m</strong>
-              <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${fishData.longitude}/${fishData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
+              <a href="${mergedData.record_link}" target="_blank">
+              <img src="${mergedData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
+              <br/><strong style="color: #098094;">${mergedData.common_name}</strong>
+              <br/><i style="color: #808080; font-size: 10pt;">${mergedData.title}</i>
+              <br/>Archetype: <strong style="color: #098094;">${mergedData.newGroup}</strong>
+              <br/>Depth: <strong style="color: #098094;">${mergedData.depth} m</strong>
+              <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${mergedData.longitude}/${mergedData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
             `
               );
           })
@@ -1352,7 +1353,7 @@ async function fetchData() {
       .style('text-align', 'center')
       .style('padding-top', '50px')
       .text(
-        'Major Studio I | Exercise 2: Qualitative Representation | Hyeonjeong | Xuan'
+        'Major Studio I | Exercise 2: Qualitative Representation | Tak | Bella | Xuan'
       );
   } catch (error) {
     console.error('Error fetching or processing data:', error);
