@@ -1227,6 +1227,8 @@ async function fetchData() {
 
     console.log(detailedData);
 
+
+     
     function createZoomedFish(d) {
       const zoomedFishContainer = d3
         .select('body')
@@ -1261,6 +1263,7 @@ async function fetchData() {
           .on('mouseover', function (event) {
             const [x, y] = d3.pointer(event);
             const fishData = detailedData.get(d.data.id);
+
             d3.select('body')
               .append('div')
               .attr('class', 'tooltip-fish')
