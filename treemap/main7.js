@@ -449,6 +449,7 @@ async function fetchData() {
       .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
       .attr("id", (d, i) => {
         return `${groupIDs[i]}`;
+        
     });
 
     // Define colourScale
@@ -486,7 +487,7 @@ async function fetchData() {
         .darker(shade(d.parent.children.indexOf(d)));
       })
       .attr('fill-opacity', 0.9);
-
+    
     // Append text labels
     nodes
       .append('text')
@@ -504,7 +505,60 @@ async function fetchData() {
         const bbox = this.getBBox();
         if (bbox.width > d.x1 - d.x0 || bbox.height > d.y1 - d.y0) {
           d3.select(this).remove();
-        }
+          
+        }             //More info for each treemap rect/node --------------------------------------------
+            // Hover effect to display total number + proportion of species deactivate hover effect for node info displaying total number + proportion of species when zoomed in and activate when zoomed out
+            nodes
+              .on('mouseover', function (event, d) {
+                if (d.depth < 5) {
+                  // Only show tooltip for top-level nodes
+                  d3.select(this)
+                    .select('rect')
+                    .attr('stroke', '#ac513b')
+                    .attr('stroke-width', 4);
+
+                  const [x, y] = d3.pointer(event);
+
+                  d3.select('body')
+                    .append('div') //popup window for Species info
+                    .attr('class', 'tooltip')
+                    .style('position', 'absolute')
+                    .style('font-size', '14px')
+                    .style('font-family', "'Open Sans', sans-serif")
+                    .style('font-weight', 'regular')
+                    .style('background', 'white')
+                    .style('border', '1.5px solid #72757c')
+                    .style('padding', '10px')
+                    .style('pointer-events', 'none')
+                    .style('opacity', '0.9')
+                    .style('border-radius', '10px') // Add 10px radius
+                    .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+                    .style('left', `${event.pageX + 20}px`)
+                    .style('top', `${event.pageY + 20}px`).html(`
+                          <strong style="color: #098094;">${d.data[0]}</strong>
+                          <br/>Ocean: <strong style="color: #098094;">${
+                            d.parent.data[0]
+                          }</strong>
+                          <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
+                            (d.value / d.parent.value) * 100
+                          )}%</strong>
+                          <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
+                            <div style="width: ${Math.round(
+                              (d.value / d.parent.value) * 100
+                            )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
+                          </div>
+                          <br/>Species Count: <strong style="color: #098094;">${
+                            d.value
+                          }</strong>
+                        `);
+                }
+              })
+              .on('mouseout', function () {
+                d3.select(this).select('rect').attr('stroke', 'white').attr('stroke-width', 1.5);
+                d3.select('.tooltip').remove();
+              });
+
+        
       });
 
     // Add fade-in and scale animation for the treemap nodes
@@ -671,63 +725,11 @@ async function fetchData() {
           .html(
             `<strong style="color: #098094;">${oceanInfo.name}</strong><br/>Area: <strong style="color: #098094;">${oceanInfo.area}</strong> <em style="color: grey;">${oceanInfo.metric}</em><br/>Depth: <strong style="color: #098094;">${oceanInfo.depth}</strong>  <em style="color: grey;">${oceanInfo.metricd}</em><br/><br/>${oceanInfo.description}`
           );
+          
       })
       
       .on('mouseout', function (event, d) {
         
-            //More info for each treemap rect/node --------------------------------------------
-            // Hover effect to display total number + proportion of species deactivate hover effect for node info displaying total number + proportion of species when zoomed in and activate when zoomed out
-            nodes
-              .on('mouseover', function (event, d) {
-                if (d.depth < 5) {
-                  // Only show tooltip for top-level nodes
-                  d3.select(this)
-                    .select('rect')
-                    .attr('stroke', '#ac513b')
-                    .attr('stroke-width', 4);
-
-                  const [x, y] = d3.pointer(event);
-
-                  d3.select('body')
-                    .append('div') //popup window for Species info
-                    .attr('class', 'tooltip')
-                    .style('position', 'absolute')
-                    .style('font-size', '14px')
-                    .style('font-family', "'Open Sans', sans-serif")
-                    .style('font-weight', 'regular')
-                    .style('background', 'white')
-                    .style('border', '1.5px solid #72757c')
-                    .style('padding', '10px')
-                    .style('pointer-events', 'none')
-                    .style('opacity', '0.9')
-                    .style('border-radius', '10px') // Add 10px radius
-                    .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-                    .style('left', `${event.pageX + 20}px`)
-                    .style('top', `${event.pageY + 20}px`).html(`
-                          <strong style="color: #098094;">${d.data[0]}</strong>
-                          <br/>Ocean: <strong style="color: #098094;">${
-                            d.parent.data[0]
-                          }</strong>
-                          <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
-                            (d.value / d.parent.value) * 100
-                          )}%</strong>
-                          <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
-                            <div style="width: ${Math.round(
-                              (d.value / d.parent.value) * 100
-                            )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
-                          </div>
-                          <br/>Species Count: <strong style="color: #098094;">${
-                            d.value
-                          }</strong>
-                        `);
-                }
-              })
-              .on('mouseout', function () {
-                d3.select(this).select('rect').attr('stroke', 'white').attr('stroke-width', 1.5);
-                d3.select('.tooltip').remove();
-              });
-
-
 
         // Remove highlight from the corresponding ocean nodes
         nodes
@@ -740,6 +742,9 @@ async function fetchData() {
 
         // Remove ocean introduction text box
         body.select('.ocean-intro').remove();
+
+
+        
       });
 
     //--------------------------------------------
@@ -891,55 +896,52 @@ async function fetchData() {
           if (bbox.width > d.x1 - d.x0 - 10 || bbox.height > d.y1 - d.y0 - 10) {
         d3.select(this).remove();
           }
+        });
 
-          // hover to display depth range + proportion of species
-        secondTreemap
-          .selectAll('rect')
-          .on('mouseover', function (event, d) {
+      // hover to display depth range + proportion of species
+      secondTreemap
+        .selectAll('rect')
+        .on('mouseover', function (event, d) {
+          d3.select(this)
+        .attr('stroke', '#ac513b')
+        .attr('stroke-width', 4);
 
-            d3.select(this)
-              .attr('stroke', '#ac513b')
-              .attr('stroke-width', 4);
+          const [x, y] = d3.pointer(event);
 
-            const [x, y] = d3.pointer(event);
-
-            d3.select('body')
-              .append('div')
-              .attr('class', 'tooltip-dep')
-              .style('position', 'absolute')
-              .style('font-size', '14px')
-              .style('font-family', "'Open Sans', sans-serif")
-              .style('font-weight', 'regular')
-              .style('background', 'white')
-              .style('border', '1.5px solid #72757c')
-              .style('padding', '10px')
-              .style('pointer-events', 'none')
-              .style('opacity', '0.9')
-              .style('border-radius', '10px') // Add 10px radius
-              .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-              .style('left', `${x + 120}px`)
-              .style('top', `${y + 320}px`)
-              .html(`Depth Range: 
+          d3.select('body')
+        .append('div')
+        .attr('class', 'tooltip-dep')
+        .style('position', 'absolute')
+        .style('font-size', '14px')
+        .style('font-family', "'Open Sans', sans-serif")
+        .style('font-weight', 'regular')
+        .style('background', 'white')
+        .style('border', '1.5px solid #72757c')
+        .style('padding', '10px')
+        .style('pointer-events', 'none')
+        .style('opacity', '0.9')
+        .style('border-radius', '10px') // Add 10px radius
+        .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+        .style('left', `${x + 120}px`)
+        .style('top', `${y + 320}px`)
+        .html(`Depth Range: 
           <strong style="color: #098094;">${d.data.name}</strong>
           <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
             (d.value / d.parent.value) * 100
           )}%</strong>
           <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
             <div style="width: ${Math.round(
-              (d.value / d.parent.value) * 100
+          (d.value / d.parent.value) * 100
             )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
           </div>
           <br/>Species Count: <strong style="color: #098094;">${d.value}</strong>
-              `);
-          })
-          .on('mouseout', function () {
-            d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5);
-            d3.select('.tooltip-dep').remove();
-          });
-
+        `);
+        })
+        .on('mouseout', function () {
+          d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5);
+          d3.select('.tooltip-dep').remove();
         });
       
-        
       // Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
       // Depth
       const legendDepth = {
