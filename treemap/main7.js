@@ -473,18 +473,19 @@ async function fetchData() {
       .append('rect')
       .attr('width', (d) => d.x1 - d.x0)
       .attr('height', (d) => d.y1 - d.y0)
+      .attr('stroke', 'white')
+      .attr('stroke-width', 1)
       .attr('fill', (d) => {
-        const parentColor = colourScale(d.parent.data[0]);
-        const shade = d3
-          .scaleLinear()
-          .domain([0, d.parent.children.length - 1])
-          .range([0.1, 0.5]); // Adjust the range to change the darkness of the shade
-        return d3
-          .color(parentColor)
-          .darker(shade(d.parent.children.indexOf(d)));
+      const parentColor = colourScale(d.parent.data[0]);
+      const shade = d3
+        .scaleLinear()
+        .domain([0, d.parent.children.length - 1])
+        .range([0.1, 0.5]); // Adjust the range to change the darkness of the shade
+      return d3
+        .color(parentColor)
+        .darker(shade(d.parent.children.indexOf(d)));
       })
-      .attr('fill-opacity', 0.9)
-      .attr('stroke', 'none');
+      .attr('fill-opacity', 0.9);
 
     // Append text labels
     nodes
@@ -671,7 +672,63 @@ async function fetchData() {
             `<strong style="color: #098094;">${oceanInfo.name}</strong><br/>Area: <strong style="color: #098094;">${oceanInfo.area}</strong> <em style="color: grey;">${oceanInfo.metric}</em><br/>Depth: <strong style="color: #098094;">${oceanInfo.depth}</strong>  <em style="color: grey;">${oceanInfo.metricd}</em><br/><br/>${oceanInfo.description}`
           );
       })
+      
       .on('mouseout', function (event, d) {
+        
+            //More info for each treemap rect/node --------------------------------------------
+            // Hover effect to display total number + proportion of species deactivate hover effect for node info displaying total number + proportion of species when zoomed in and activate when zoomed out
+            nodes
+              .on('mouseover', function (event, d) {
+                if (d.depth < 5) {
+                  // Only show tooltip for top-level nodes
+                  d3.select(this)
+                    .select('rect')
+                    .attr('stroke', '#ac513b')
+                    .attr('stroke-width', 4);
+
+                  const [x, y] = d3.pointer(event);
+
+                  d3.select('body')
+                    .append('div') //popup window for Species info
+                    .attr('class', 'tooltip')
+                    .style('position', 'absolute')
+                    .style('font-size', '14px')
+                    .style('font-family', "'Open Sans', sans-serif")
+                    .style('font-weight', 'regular')
+                    .style('background', 'white')
+                    .style('border', '1.5px solid #72757c')
+                    .style('padding', '10px')
+                    .style('pointer-events', 'none')
+                    .style('opacity', '0.9')
+                    .style('border-radius', '10px') // Add 10px radius
+                    .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+                    .style('left', `${event.pageX + 20}px`)
+                    .style('top', `${event.pageY + 20}px`).html(`
+                          <strong style="color: #098094;">${d.data[0]}</strong>
+                          <br/>Ocean: <strong style="color: #098094;">${
+                            d.parent.data[0]
+                          }</strong>
+                          <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
+                            (d.value / d.parent.value) * 100
+                          )}%</strong>
+                          <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
+                            <div style="width: ${Math.round(
+                              (d.value / d.parent.value) * 100
+                            )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
+                          </div>
+                          <br/>Species Count: <strong style="color: #098094;">${
+                            d.value
+                          }</strong>
+                        `);
+                }
+              })
+              .on('mouseout', function () {
+                d3.select(this).select('rect').attr('stroke', 'white').attr('stroke-width', 1.5);
+                d3.select('.tooltip').remove();
+              });
+
+
+
         // Remove highlight from the corresponding ocean nodes
         nodes
           .filter((node) => node.parent.data[0] === d)
@@ -687,58 +744,7 @@ async function fetchData() {
 
     //--------------------------------------------
 
-    //More info for each treemap rect/node --------------------------------------------
-    // Hover effect to display total number + proportion of species deactivate hover effect for node info displaying total number + proportion of species when zoomed in and activate when zoomed out
-    nodes
-      .on('mouseover', function (event, d) {
-        if (d.depth < 5) {
-          // Only show tooltip for top-level nodes
-          d3.select(this)
-            .select('rect')
-            .attr('stroke', '#ac513b')
-            .attr('stroke-width', 4);
 
-          const [x, y] = d3.pointer(event);
-
-          body
-            .append('div') //popup window for Species info
-            .attr('class', 'tooltip')
-            .style('position', 'absolute')
-            .style('font-size', '14px')
-            .style('font-family', "'Open Sans', sans-serif")
-            .style('font-weight', 'regular')
-            .style('background', 'white')
-            .style('border', '1.5px solid #72757c')
-            .style('padding', '10px')
-            .style('pointer-events', 'none')
-            .style('opacity', '0.9')
-            .style('border-radius', '10px') // Add 10px radius
-            .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-            .style('left', `${event.pageX + 20}px`)
-            .style('top', `${event.pageY + 20}px`).html(`
-                  <strong style="color: #098094;">${d.data[0]}</strong>
-                  <br/>Ocean: <strong style="color: #098094;">${
-                    d.parent.data[0]
-                  }</strong>
-                  <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
-                    (d.value / d.parent.value) * 100
-                  )}%</strong>
-                  <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
-                    <div style="width: ${Math.round(
-                      (d.value / d.parent.value) * 100
-                    )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
-                  </div>
-                  <br/>Species Count: <strong style="color: #098094;">${
-                    d.value
-                  }</strong>
-                `);
-        }
-      })
-      .on('mouseout', function () {
-        d3.select(this).select('rect').attr('stroke', 'none');
-
-        body.select('.tooltip').remove();
-      });
 
     //--------------------------------------------
 
@@ -885,9 +891,55 @@ async function fetchData() {
           if (bbox.width > d.x1 - d.x0 - 10 || bbox.height > d.y1 - d.y0 - 10) {
         d3.select(this).remove();
           }
+
+          // hover to display depth range + proportion of species
+        secondTreemap
+          .selectAll('rect')
+          .on('mouseover', function (event, d) {
+
+            d3.select(this)
+              .attr('stroke', '#ac513b')
+              .attr('stroke-width', 4);
+
+            const [x, y] = d3.pointer(event);
+
+            d3.select('body')
+              .append('div')
+              .attr('class', 'tooltip-dep')
+              .style('position', 'absolute')
+              .style('font-size', '14px')
+              .style('font-family', "'Open Sans', sans-serif")
+              .style('font-weight', 'regular')
+              .style('background', 'white')
+              .style('border', '1.5px solid #72757c')
+              .style('padding', '10px')
+              .style('pointer-events', 'none')
+              .style('opacity', '0.9')
+              .style('border-radius', '10px') // Add 10px radius
+              .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+              .style('left', `${x + 120}px`)
+              .style('top', `${y + 320}px`)
+              .html(`Depth Range: 
+          <strong style="color: #098094;">${d.data.name}</strong>
+          <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
+            (d.value / d.parent.value) * 100
+          )}%</strong>
+          <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
+            <div style="width: ${Math.round(
+              (d.value / d.parent.value) * 100
+            )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
+          </div>
+          <br/>Species Count: <strong style="color: #098094;">${d.value}</strong>
+              `);
+          })
+          .on('mouseout', function () {
+            d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5);
+            d3.select('.tooltip-dep').remove();
+          });
+
         });
       
-
+        
       // Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
       // Depth
       const legendDepth = {
@@ -1080,7 +1132,7 @@ async function fetchData() {
         .style('opacity', 0.9)
         .style('transform', 'scale(1.5)')
         .style('position', 'absolute')
-        .style('top', '23%')
+        .style('top', '32%')
         .style('left', '49%');
 
       legendGroup
@@ -1141,12 +1193,12 @@ async function fetchData() {
         .select('body')
         .append('div')
         .attr('class', 'zoomed-fish-container')
-        .style('position', 'flexible')
-        .style('top', `${node.y0 + (node.y1 - node.y0) * 0.1}px`)
-        .style('left', `${node.x0 + (node.x1 - node.x0) * 0.1}px`)
-        .style('width', `${(node.x1 - node.x0) * 0.8}px`)
-        .style('height', `${(node.y1 - node.y0) * 0.8}px`)
-        .style('pointer-events', 'auto')
+        .style('position', 'absolute')
+        .style('top', `${d3.select('svg').attr('viewBox').split(' ')[1]+100}px`)
+        .style('left', `${d3.select('svg').attr('viewBox').split(' ')[0]+220}px`)
+        .style('width', `${d3.select('svg').attr('viewBox').split(' ')[2]}px`)
+        .style('height', `${d3.select('svg').attr('viewBox').split(' ')[3]}px`)
+        .style('pointer-events', 'none')
         .style('z-index', 1); // fishes in front of the treemap
 
       for (let i = 0; i < 20; i++) {
@@ -1162,7 +1214,7 @@ async function fetchData() {
           .style('top', `${Math.random() * 80 + 35}%`) // Disperse fish within the node
           .style('left', `${Math.random() * 80 + 0}%`) // Disperse fish within the node
           .style('filter', `hue-rotate(${Math.random() * 360}deg)`) // Randomize color
-          .style('pointer-events', 'auto') // Enable pointer events for the fish
+          .style('pointer-events', 'auto') 
           .style('cursor', 'pointer')
           .style('transition', 'transform 5s linear');
 
@@ -1179,40 +1231,43 @@ async function fetchData() {
             const mergedData = fishData.map((fish) => ({
               ...fish,
               thumbnail:
-                imgData.find((img) => img.id === fish.id)?.thumbnail ||
-                'default_image.jpg',
+          imgData.find((img) => img.id === fish.id)?.thumbnail ||
+          'default_image.jpg',
             }));
 
-            console.log('Merged Fish Data:', mergedData);
+            // Find the specific fish data for the hovered fish
+            const hoveredFishData = mergedData.find((fish) => fish.id === d.id);
 
-            // Hover over each fish img to show more info - image thumbnail + common names + scientific names(italics) + archetypes + depth + map
-            d3.select('body')
-              .append('div')
-              .attr('class', 'tooltip-fish')
-              .style('position', 'absolute')
-              .style('font-size', '18px')
-              .style('font-family', "'Open Sans', sans-serif")
-              .style('font-weight', 'regular')
-              .style('background', 'white')
-              .style('border', '1.5px solid #72757c')
-              .style('padding', '10px')
-              .style('pointer-events', 'none')
-              .style('opacity', '0.9')
-              .style('border-radius', '10px') // Add 10px radius
-              .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-              .style('left', `${x + 800}px`)
-              .style('top', `${y + 500}px`)
-              .html(
-                `
-              <a href="${imgData.record_link}" target="_blank">
-              <img src="${imgData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
-              <br/><strong style="color: #098094;">${fishData.common_name}</strong>
-              <br/><i style="color: #808080; font-size: 10pt;">${fishData.title}</i>
-              <br/>Archetype: <strong style="color: #098094;">${fishData.newGroup}</strong>
-              <br/>Depth: <strong style="color: #098094;">${fishData.depth} m</strong>
-              <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${fishData.longitude}/${fishData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
+            if (hoveredFishData) {
+              // Hover over each fish img to show more info - image thumbnail + common names + scientific names(italics) + archetypes + depth + map
+              d3.select('body')
+          .append('div')
+          .attr('class', 'tooltip-fish')
+          .style('position', 'absolute')
+          .style('font-size', '18px')
+          .style('font-family', "'Open Sans', sans-serif")
+          .style('font-weight', 'regular')
+          .style('background', 'white')
+          .style('border', '1.5px solid #72757c')
+          .style('padding', '10px')
+          .style('pointer-events', 'auto')
+          .style('opacity', '0.9')
+          .style('border-radius', '10px') // Add 10px radius
+          .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+          .style('left', `${x + 20}px`)
+          .style('top', `${y + 20}px`)
+          .html(
             `
-              );
+          <a href="${hoveredFishData.record_link}" target="_blank">
+          <img src="${hoveredFishData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
+          <br/><strong style="color: #098094;">${hoveredFishData.common_name}</strong>
+          <br/><i style="color: #808080; font-size: 10pt;">${hoveredFishData.title}</i>
+          <br/>Archetype: <strong style="color: #098094;">${hoveredFishData.newGroup}</strong>
+          <br/>Depth: <strong style="color: #098094;">${hoveredFishData.depth} m</strong>
+          <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${hoveredFishData.longitude}/${hoveredFishData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
+              `
+          );
+            }
           })
           .on('mouseout', function () {
             d3.select('.tooltip-fish').remove();
@@ -1290,7 +1345,7 @@ async function fetchData() {
         svg.selectAll('.detailed-node').remove();
 
         // Remove secondary legend when zoomed out
-        d3.selectAll('.legend-group, .tooltip-depth, .tooltip-size')
+        d3.selectAll('.legend-group, tooltip, .tooltip-depth, .tooltip-size, .tooltip-dep')
           .transition()
           .duration(400)
           .style('opacity', 0)
@@ -1325,3 +1380,36 @@ async function fetchData() {
 }
 
 fetchData();
+
+
+          //   // Hover over each fish img to show more info - image thumbnail + common names + scientific names(italics) + archetypes + depth + map
+          //   d3.select('body')
+          //     .append('div')
+          //     .attr('class', 'tooltip-fish')
+          //     .style('position', 'absolute')
+          //     .style('font-size', '18px')
+          //     .style('font-family', "'Open Sans', sans-serif")
+          //     .style('font-weight', 'regular')
+          //     .style('background', 'white')
+          //     .style('border', '1.5px solid #72757c')
+          //     .style('padding', '10px')
+          //     .style('pointer-events', 'none')
+          //     .style('opacity', '0.9')
+          //     .style('border-radius', '10px') // Add 10px radius
+          //     .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+          //     .style('left', `${x + 800}px`)
+          //     .style('top', `${y + 500}px`)
+          //     .html(
+          //       `
+          //         <a href="${imgData.record_link}" target="_blank">
+          //         <img src="${imgData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
+          //         <br/><strong style="color: #098094;">${fishData.common_name}</strong>
+          //         <br/><i style="color: #808080; font-size: 10pt;">${fishData.title}</i>
+          //         <br/>Archetype: <strong style="color: #098094;">${fishData.newGroup}</strong>
+          //         <br/>Depth: <strong style="color: #098094;">${fishData.depth} m</strong>
+          //         <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${fishData.longitude}/${fishData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
+          //       `
+          //     );
+          // })
+          // .on('mouseout', function () {
+          //   d3.select('.tooltip-fish').remove();
