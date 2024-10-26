@@ -150,22 +150,8 @@ async function fetchData() {
 
     //Depth range
     function getDepthRange(depth) {
-      if (depth <= 100) {
-        // 0-100 meters: 20-meter increments
-        if (depth <= 20) return '0-20m';
-        else if (depth <= 40) return '20-40m';
-        else if (depth <= 60) return '40-60m';
-        else if (depth <= 80) return '60-80m';
-        else return '80-100m';
-      } else if (depth <= 1000) {
-        // 100-1000 meters: 100-meter increments
-        const lowerBound = Math.floor(depth / 100) * 100;
-        return `${lowerBound}-${lowerBound + 100}m`;
-      } else {
-        //  Over 1000 meters: Break into 500-meter increments
-        const lowerBound = Math.floor(depth / 500) * 500;
-        return `${lowerBound}-${lowerBound + 500}m`;
-      }
+      const lowerBound = Math.floor(depth / 100) * 100;
+      return `${lowerBound}-${lowerBound + 100}m`;
     }
 
     // Group data by ocean and depth, the ocean is the first level of the hierarchy, and the depth type is the second level
@@ -179,7 +165,7 @@ async function fetchData() {
         return ocean === 'North Sea' ? ocean : ocean + ' Ocean';
       },
       (d) => d.newGroup
-      //d => d.depth //to be add during phase 2
+            //d => d.depth //to be add during phase 2
     );
 
     console.log('Predator/Prey by Oceans, then Depths:');
@@ -378,8 +364,8 @@ async function fetchData() {
 
     const title = body
       .append('h1')
-      .style('font-size', '32px')
-      .style('font-family', "'Open Sans', sans-serif")
+      .style('font-size', '56px')
+      .style('font-family', "'Shorelines Script', sans-serif")
       .style('font-weight', 'regular')
       .style('color', '#098094')
       .style('text-align', 'center')
@@ -420,7 +406,7 @@ async function fetchData() {
       .sum(([, value]) => value)
       .sort((a, b) => b.value - a.value);
 
-    console.log(root);
+      console.log(root);
 
     // Set up the dimensions of the treemap
     const width = window.innerWidth * 0.8;
@@ -451,16 +437,19 @@ async function fetchData() {
 
     console.log(root.leaves());
 
+    // Create group ID (ocean + newGroup)
+    const groupIDs = root.leaves().map((d) => d.parent.data[0].replace(/\s+/g, '-') + '_' + d.data[0]);
+
     // Create a group for each node
     const nodes = svg
       .selectAll('g')
       .data(root.leaves())
       .enter()
       .append('g')
-      .attr('class', (d, i) => {
-        return root.leaves()[i].parent.data[0]; // Assuming this returns the class name
-      })
-      .attr('transform', (d) => `translate(${d.x0},${d.y0})`);
+      .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
+      .attr("id", (d, i) => {
+        return `${groupIDs[i]}`;
+    });
 
     // Define colourScale
     const colourScale = d3
@@ -758,35 +747,35 @@ async function fetchData() {
 
     function getDetailedData(ocean) {
       switch (ocean) {
-        case 'Pacific':
+        case 'Pacific Ocean':
           return {
             Predator: pPredator,
             Prey: pPrey,
             Others: pOthers,
           };
-        case 'Atlantic':
+        case 'Atlantic Ocean':
           return {
             Predator: atPredator,
             Prey: atPrey,
             Others: atOthers,
           };
-        case 'Indian':
+        case 'Indian Ocean':
           return {
             Predator: iPredator,
             Prey: iPrey,
             Others: iOthers,
           };
-        case 'South':
+        case 'South Ocean':
           return {
             Predator: sPredator,
             Others: sOthers,
           };
-        case 'North':
+        case 'North Sea':
           return {
             Predator: nPredator,
             Others: nOthers,
           };
-        case 'Arctic':
+        case 'Arctic Ocean':
           return {
             Predator: arPredator,
           };
@@ -831,6 +820,74 @@ async function fetchData() {
       //tree map description disappear when zoom in
       description.transition().duration(500).style('opacity', 0);
 
+
+  
+
+      // Aggregate the data for the selected ocean and archetype
+      const selectedSeaname = d.parent.data[0];
+      const selectedNewGroup = d.data[0];
+      let rolledupData = getDetailedData(selectedSeaname)[selectedNewGroup];
+      rolledupData = Array.from(rolledupData, ([key, value]) => ({name: key, value}));
+      rolledupData = rolledupData.sort((a, b) => b.value - a.value);
+
+      const secondTreemapRoot = d3.hierarchy({ values: rolledupData }, d => d.values).sum(d => d.value);
+
+      d3.treemap()
+        .size([width, height])
+        .padding(5)
+        .round(true)(secondTreemapRoot);
+      
+      // Create a group for each node
+      const groupID = `${selectedSeaname.replace(/\s+/g, '-')}_${selectedNewGroup}`;
+      const secondTreemap = d3.select(`#${groupID}`);
+
+
+      // Sort the leaves by depth ranges numerically
+      const sortedLeaves = secondTreemapRoot.leaves().sort((a, b) => b.value - a.value);
+
+      secondTreemap
+        .selectAll('rect')
+        .data(sortedLeaves, d => d.data.name)
+        .enter().append('rect')
+        .attr('class', 'detailed-node')
+        .attr("x", d => d.x0)
+        .attr("y", d => d.y0)
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0)
+        .attr('fill-opacity', 0.9)
+        .attr('stroke', 'white')
+        .attr('stroke-width', 1.5)
+        .attr('id', (d, i) => {
+          return `${groupID}_${d.data.name}`;
+        })
+        .attr('fill', d => {
+          const index = sortedLeaves.indexOf(d);
+          const shade = d3.scaleLinear()
+        .domain([0, sortedLeaves.length - 1])
+        .range([0.5, 5]);
+          return d3.color(colourScale(selectedSeaname)).darker(shade(index));
+        });
+
+      secondTreemap
+        .selectAll('text')
+        .data(sortedLeaves, d => d.data.name)
+        .enter().append('text')
+        .text(d => d.data.name)
+        .attr('class', 'detailed-node')
+        .attr("x", d => d.x0 + 5)
+        .attr("y", d => d.y0 + 20)
+        .style('font-family', "'Open Sans', sans-serif")
+        .style('font-weight', 'regular')
+        .style('fill', 'white')
+        .style('font-size', '12px')
+        .each(function (d) {
+          const bbox = this.getBBox();
+          if (bbox.width > d.x1 - d.x0 - 10 || bbox.height > d.y1 - d.y0 - 10) {
+        d3.select(this).remove();
+          }
+        });
+      
+
       // Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
       // Depth
       const legendDepth = {
@@ -847,7 +904,7 @@ async function fetchData() {
       const svgDepth = d3
         .select('body')
         .append('svg')
-        .attr('width', 50)
+        .attr('width', 58)
         .attr('height', 100)
         .style('background-color', 'transparent')
         .style('position', 'absolute')
@@ -879,6 +936,7 @@ async function fetchData() {
         .attr('y', legendDepth.gradientBar.y)
         .attr('width', legendDepth.gradientBar.width)
         .attr('height', legendDepth.gradientBar.height)
+        .attr('stroke', 'white') // Add white stroke
         .attr('fill', 'url(#gradientBar)');
 
       // Add hover effect for elaborate legend info
@@ -910,7 +968,7 @@ async function fetchData() {
             .style('left', `${x + 20}px`)
             .style('top', `${y - 20}px`)
             .html(
-              `<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Cube within 20m intervals/bands.`
+              `<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Each rectangle within intervals of <strong style="color: #098094;">300ft / 100m</strong>.`
             )
             .style(
               'transform',
@@ -925,74 +983,76 @@ async function fetchData() {
       const legendSize = {
         squares: [
           {
-            x: 10,
-            y: 10,
-            size: 80,
-            color: d3.color(colourScale(d.parent.data[0])).brighter(0),
+        x: 10,
+        y: 10,
+        size: 80,
+        color: d3.color(colourScale(d.parent.data[0])).brighter(0),
           },
           {
-            x: 10,
-            y: 30,
-            size: 60,
-            color: d3.color(colourScale(d.parent.data[0])).darker(1),
+        x: 10,
+        y: 30,
+        size: 60,
+        color: d3.color(colourScale(d.parent.data[0])).darker(0.3),
           },
           {
-            x: 10,
-            y: 50,
-            size: 40,
-            color: d3.color(colourScale(d.parent.data[0])).darker(2),
+        x: 10,
+        y: 50,
+        size: 40,
+        color: d3.color(colourScale(d.parent.data[0])).darker(0.5),
           },
         ],
         draw: function (svg) {
           svg
-            .selectAll('rect')
-            .data(this.squares)
-            .enter()
-            .append('rect')
-            .attr('x', (d) => d.x)
-            .attr('y', (d) => d.y)
-            .attr('width', (d) => d.size)
-            .attr('height', (d) => d.size)
-            .attr('fill', (d) => d.color)
-            .on('mouseover', function (event, d) {
-              const [x, y] = d3.pointer(event);
-              d3.select('body')
-                .append('div')
-                .attr('class', 'tooltip-size')
-                .style('position', 'absolute')
-                .style('font-size', '14px')
-                .style('font-family', "'Open Sans', sans-serif")
-                .style('font-weight', 'regular')
-                .style('background', 'white')
-                .style('border', '2px solid #72757c')
-                .style('padding', '10px')
-                .style('pointer-events', 'none')
-                .style('opacity', '0.9')
-                .style('border-radius', '10px') // radius
-                .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // drop shadow
-                .style('left', `${x + 20}px`)
-                .style('top', `${y + 20}px`)
-                .html(
-                  `<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`
-                )
-                .style(
-                  'transform',
-                  `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`
-                );
-            })
-            .on('mouseout', function () {
-              d3.select('.tooltip-size').remove();
-            });
+        .selectAll('rect')
+        .data(this.squares)
+        .enter()
+        .append('rect')
+        .attr('x', (d) => d.x)
+        .attr('y', (d) => d.y)
+        .attr('width', (d) => d.size)
+        .attr('height', (d) => d.size)
+        .attr('fill', (d) => d.color)
+        .attr('stroke', 'white') // Add white stroke
+        .attr('stroke-width', 1) // Set stroke width
+        .on('mouseover', function (event, d) {
+          const [x, y] = d3.pointer(event);
+          d3.select('body')
+            .append('div')
+            .attr('class', 'tooltip-size')
+            .style('position', 'absolute')
+            .style('font-size', '14px')
+            .style('font-family', "'Open Sans', sans-serif")
+            .style('font-weight', 'regular')
+            .style('background', 'white')
+            .style('border', '2px solid #72757c')
+            .style('padding', '10px')
+            .style('pointer-events', 'none')
+            .style('opacity', '0.9')
+            .style('border-radius', '10px') // radius
+            .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // drop shadow
+            .style('left', `${x + 20}px`)
+            .style('top', `${y + 20}px`)
+            .html(
+          `<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`
+            )
+            .style(
+          'transform',
+          `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`
+            );
+        })
+        .on('mouseout', function () {
+          d3.select('.tooltip-size').remove();
+        });
 
           svg
-            .append('line')
-            .attr('x1', 50)
-            .attr('y1', 50)
-            .attr('x2', 90)
-            .attr('y2', 10)
-            .attr('stroke', 'white')
-            .attr('stroke-width', 1)
-            .attr('stroke-dasharray', '4 6');
+        .append('line')
+        .attr('x1', 50)
+        .attr('y1', 50)
+        .attr('x2', 90)
+        .attr('y2', 10)
+        .attr('stroke', 'white')
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '4 6');
         },
       };
 
@@ -1037,102 +1097,7 @@ async function fetchData() {
         .duration(1200)
         .style('opacity', 1);
 
-      // Fetch detailed data and update the treemap
-      const detailedData = getDetailedData(
-        'Pacific',
-        'Atlantic',
-        'Indian',
-        'South',
-        'North',
-        'Arctic'
-      );
-      console.log('Detailed Data:', detailedData);
 
-      if (Object.keys(detailedData).length > 0) {
-        const detailedRoot = d3
-          .hierarchy({
-            children: Object.entries(detailedData).map(([key, value]) => ({
-              name: key,
-              children: Array.from(value, ([depthRange, count]) => ({
-                name: getDepthRange(depthRange),
-                value: count,
-              })),
-            })),
-          })
-          .sum((d) => d.value)
-          .sort((a, b) => b.value - a.value);
-
-        console.log('Detailed Root:', detailedRoot);
-
-        treemapLayout(detailedRoot);
-
-        const detailedNodes = svg.selectAll(".detailed-node")
-          .data(detailedRoot.leaves())
-          .enter()
-          .append("g")
-          .attr("class", "detailed-node")
-          .attr("transform", node => `translate(${node.x0},${node.y0})`);
-
-
-        detailedNodes.append("rect")
-          .attr("width", node => node.x1 - node.x0)
-          .attr("height", node => node.y1 - node.y0)
-          .attr("fill", node => {
-            const parentColor = colourScale(node.parent.data.name);
-            const shade = d3.scaleLinear()
-          .domain([0, (detailedRoot.children ? detailedRoot.children.length : 1) - 1])
-          .range([0.3, 0.7]); // Make the shade range darker and wider
-            return d3.color(parentColor).darker(shade(detailedRoot.children ? detailedRoot.children.indexOf(node) : 1));
-          })
-          .attr("fill-opacity", 1)
-          .attr("stroke", "none");
-
-        detailedNodes.append("text")
-          .attr("x", 10)
-          .attr("y", 25)
-          .style("font-family", "'Open Sans', sans-serif")
-          .style("font-weight", "regular")
-          .style("fill", "white")
-          .style("font-size", node => {
-            const fontSize = Math.min((node.x1 - node.x0) / 5, (node.y1 - node.y0) / 5, 16);
-            return fontSize < 10 ? "0px" : `${fontSize}px`;
-          })
-          .text(node => getDepthRange(node.data.value))
-          .each(function(node) {
-            const bbox = this.getBBox();
-      if (bbox.width > (node.x1 - node.x0) || bbox.height > (node.y1 - node.y0)) {
-        d3.select(this).remove();
-            }
-          });
-
-        // Add fade-in and scale animation for the detailed nodes
-        setTimeout(() => {
-          detailedNodes.style("opacity", 0)
-            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(0.1)`)
-            .transition()
-            .duration(1500)
-            .style("opacity", 0.9)
-            .attr("transform", node => `translate(${x(node.x0)},${y(node.y0)}) scale(1)`);
-        }, 2000);
-
-          detailedNodes.append("text")
-            .attr("x", 10)
-            .attr("y", 25)
-            .style("font-family", "'Open Sans', sans-serif")
-            .style("font-weight", "regular")
-            .style("fill", "white")
-            .style("font-size", node => {
-              const fontSize = Math.min((x(node.x1) - x(node.x0)) / 5, (y(node.y1) - y(node.y0)) / 5, 16);
-              return fontSize < 10 ? "0px" : `${fontSize}px`;
-            })
-            .text(node => getDepthRange(node.data.name))
-            .each(function(node) {
-              const bbox = this.getBBox();
-              if (bbox.width > (x(node.x1) - x(node.x0)) || bbox.height > (y(node.y1) - y(node.y0))) {
-                d3.select(this).remove();
-              }
-            });
-      }
     }
 
     nodes.on('click', function (event, d) {
@@ -1184,7 +1149,7 @@ async function fetchData() {
         .style('pointer-events', 'auto')
         .style('z-index', 1); // fishes in front of the treemap
 
-      for (let i = 0; i < 15; i++) {
+      for (let i = 0; i < 20; i++) {
         const fish = fishContainer
           .append('img')
           .attr(
@@ -1192,7 +1157,7 @@ async function fetchData() {
             possiblePaths[Math.floor(Math.random() * possiblePaths.length)]
           )
           .style('position', 'absolute')
-          .style('width', `${Math.random() * 50 + 80}px`) // Randomize size, scaled to 200%
+          .style('width', `${Math.random() * 50 + 60}px`) // Randomize size
           .style('height', 'auto')
           .style('top', `${Math.random() * 80 + 35}%`) // Disperse fish within the node
           .style('left', `${Math.random() * 80 + 0}%`) // Disperse fish within the node
@@ -1238,15 +1203,14 @@ async function fetchData() {
               .style('left', `${x + 800}px`)
               .style('top', `${y + 500}px`)
               .html(
-                //find a way to make it flexible
                 `
-              <a href="${mergedData.record_link}" target="_blank">
-              <img src="${mergedData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
-              <br/><strong style="color: #098094;">${mergedData.common_name}</strong>
-              <br/><i style="color: #808080; font-size: 10pt;">${mergedData.title}</i>
-              <br/>Archetype: <strong style="color: #098094;">${mergedData.newGroup}</strong>
-              <br/>Depth: <strong style="color: #098094;">${mergedData.depth} m</strong>
-              <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${mergedData.longitude}/${mergedData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
+              <a href="${imgData.record_link}" target="_blank">
+              <img src="${imgData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;"></a>
+              <br/><strong style="color: #098094;">${fishData.common_name}</strong>
+              <br/><i style="color: #808080; font-size: 10pt;">${fishData.title}</i>
+              <br/>Archetype: <strong style="color: #098094;">${fishData.newGroup}</strong>
+              <br/>Depth: <strong style="color: #098094;">${fishData.depth} m</strong>
+              <br/><br/><img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${fishData.longitude}/${fishData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
             `
               );
           })
@@ -1353,7 +1317,7 @@ async function fetchData() {
       .style('text-align', 'center')
       .style('padding-top', '50px')
       .text(
-        'Major Studio I | Exercise 2: Qualitative Representation | Tak | Bella | Xuan'
+        'Major Studio I | Exercise 2: Qualitative Representation | Hyeonjeong | Xuan'
       );
   } catch (error) {
     console.error('Error fetching or processing data:', error);
