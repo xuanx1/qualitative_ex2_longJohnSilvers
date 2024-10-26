@@ -1246,13 +1246,10 @@ async function fetchData() {
         const recordLink = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
         const fish = zoomedFishContainer
           .append('a')
-          .attr('href', d.data.record_link) // Use record_link here
+          .attr('href', '#') // Sample link
           .attr('target', '_blank')
           .append('img')
-          .attr(
-            'src',
-            recordLink
-          )
+          .attr('src', recordLink)
           .style('position', 'absolute')
           .style('width', `${Math.random() * 30 + 50}px`) // Randomise size
           .style('height', 'auto')
@@ -1260,11 +1257,14 @@ async function fetchData() {
           .style('left', `${Math.random() * 100}%`)
           .style('filter', `hue-rotate(${Math.random() * 360}deg)`) // Randomise color
           .style('transition', 'transform 5s linear')
+          
+          
+          
           .on('mouseover', function (event) {
             const [x, y] = d3.pointer(event);
-            const fishData = detailedData.get(d.data.id);
-
-            d3.select('body')
+            const tooltip = d3
+              
+              .select('body')
               .append('div')
               .attr('class', 'tooltip-fish')
               .style('position', 'absolute')
@@ -1273,26 +1273,33 @@ async function fetchData() {
               .style('font-weight', 'regular')
               .style('background', 'white')
               .style('border', '1.5px solid #72757c')
-              .style('padding', '10px')
-              .style('pointer-events', 'none')
+              .style('padding', '15px')
+              .style('pointer-events', 'auto')
               .style('opacity', '0.9')
               .style('border-radius', '10px') // Add 10px radius
               .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
               .style('left', `${x + 20}px`)
               .style('top', `${y + 20}px`)
-              .html(
-                `<strong style="color: #098094;">${fishData.common_name}</strong><br/>
-                <i style="color: #808080; font-size: 10pt;">${fishData.title}</i><br/>
-                Archetype: <strong style="color: #098094;">${fishData.newGroup}</strong><br/>
-                Depth: <strong style="color: #098094;">${fishData.depth} m</strong><br/>
-                <a href="${fishData.record_link}" target="_blank">
-                  <img src="${fishData.thumbnail}" alt="Fish Thumbnail" style="width: 100px; height: auto; border-radius: 5px;">
-                </a><br/>
-                <img src="https://stamen-tiles.a.ssl.fastly.net/watercolor/${fishData.longitude}/${fishData.latitude}/10/256.png" alt="Map" style="width: 100%; border-radius: 5px;">
-                `
-              );
-          })
-          .on('mouseout', function () {
+              .html(`
+              <img src="${recordLink}" alt="Fish Thumbnail" style="width: 250px; height: auto; border-radius: 5px;"><br/>
+              <br/><strong style="color: #098094;font-size: 18pt;">Sample Fish</strong>
+              <br/><i style="color: #808080; font-size: 10pt;">Sample Title</i><br/>
+              <br/><span style="color: #808080;">Ocean</span> <strong style="color: #098094;">Sample Ocean</strong>
+              <br/><span style="color: #808080;">Archetype</span> <strong style="color: #098094;">Sample Archetype</strong>
+              <br/><span style="color: #808080;">Depth</span> <strong style="color: #098094;">100 m</strong>
+              <div id="map-sample" style="width: 250px; height: 150px; margin-top: 10px; border-radius: 5px;"></div>
+              `);
+
+            // Initialize Leaflet map inside the tooltip
+            const map = L.map('map-sample', { zoomControl: false }).setView([40.7847, -73.9574], 12);
+            
+            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg', {
+              attribution:
+              '<a href="http://stamen.com">Stamen Design</a>',
+              maxZoom: 18,
+            }).addTo(map);
+            })
+            .on('mouseout', function () {
             d3.select('.tooltip-fish').remove();
           });
 
