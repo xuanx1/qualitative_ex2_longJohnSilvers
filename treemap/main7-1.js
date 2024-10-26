@@ -11,6 +11,11 @@ const archetype = [Predator, Prey, Others];
 
 import { predatorOrders, preyOrders, leftOrders } from './data/group_filter.js';
 
+let stateObject = {
+  treemapLevel: 0,
+};
+
+
 // Loading screen --------------------------------------------
 const loadingScreen = d3
   .select('body')
@@ -510,7 +515,7 @@ async function fetchData() {
             // Hover effect to display total number + proportion of species deactivate hover effect for node info displaying total number + proportion of species when zoomed in and activate when zoomed out
             nodes
               .on('mouseover', function (event, d) {
-                if (d.depth < 5) {
+                if (stateObject.treemapLevel === 0) {
                   // Only show tooltip for top-level nodes
                   d3.select(this)
                     .select('rect')
@@ -796,6 +801,10 @@ async function fetchData() {
     }
 
     function zoom(d, width, height, margin, svg, nodes) {
+
+      // Update StateObject
+      stateObject.treemapLevel = 1;
+
       const x = d3.scaleLinear().domain([d.x0, d.x1]).range([0, width]);
       const y = d3.scaleLinear().domain([d.y0, d.y1]).range([0, height]);
 
@@ -902,41 +911,43 @@ async function fetchData() {
       secondTreemap
         .selectAll('rect')
         .on('mouseover', function (event, d) {
-          d3.select(this)
-        .attr('stroke', '#ac513b')
-        .attr('stroke-width', 4);
-
-          const [x, y] = d3.pointer(event);
-
-          d3.select('body')
-        .append('div')
-        .attr('class', 'tooltip-dep')
-        .style('position', 'absolute')
-        .style('font-size', '14px')
-        .style('font-family', "'Open Sans', sans-serif")
-        .style('font-weight', 'regular')
-        .style('background', 'white')
-        .style('border', '1.5px solid #72757c')
-        .style('padding', '10px')
-        .style('pointer-events', 'none')
-        .style('opacity', '0.9')
-        .style('border-radius', '10px') // Add 10px radius
-        .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-        .style('left', `${x + 120}px`)
-        .style('top', `${y + 320}px`)
-        .html(`Depth Range: 
-          <strong style="color: #098094;">${d.data.name}</strong>
-          <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
-            (d.value / d.parent.value) * 100
-          )}%</strong>
-          <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
-            <div style="width: ${Math.round(
-          (d.value / d.parent.value) * 100
-            )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
-          </div>
-          <br/>Species Count: <strong style="color: #098094;">${d.value}</strong>
-        `);
-        })
+          if (stateObject.treemapLevel === 1 & d.data.name !== undefined) {
+            d3.select(this)
+              .attr('stroke', '#ac513b')
+              .attr('stroke-width', 4);
+              
+            const [x, y] = d3.pointer(event);
+            
+            d3.select('body')
+              .append('div')
+              .attr('class', 'tooltip-dep')
+              .style('position', 'absolute')
+              .style('font-size', '14px')
+              .style('font-family', "'Open Sans', sans-serif")
+              .style('font-weight', 'regular')
+              .style('background', 'white')
+              .style('border', '1.5px solid #72757c')
+              .style('padding', '10px')
+              .style('pointer-events', 'none')
+              .style('opacity', '0.9')
+              .style('border-radius', '10px') // Add 10px radius
+              .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+              .style('left', `${x + 120}px`)
+              .style('top', `${y + 320}px`)
+              .html(`Depth Range: 
+                <strong style="color: #098094;">${d.data.name}</strong>
+                <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
+                  (d.value / d.parent.value) * 100
+                )}%</strong>
+                <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
+                  <div style="width: ${Math.round(
+                (d.value / d.parent.value) * 100
+                  )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
+                </div>
+                <br/>Species Count: <strong style="color: #098094;">${d.value}</strong>
+              `);
+            }
+          })
         .on('mouseout', function () {
           d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5);
           d3.select('.tooltip-dep').remove();
@@ -1344,7 +1355,10 @@ async function fetchData() {
           .text((d) => d.data[0]);
 
         // Remove detailed nodes
-        svg.selectAll('.detailed-node').remove();
+        if (stateObject.treemapLevel === 1) {
+          d3.selectAll('.detailed-node').remove();
+          stateObject.treemapLevel = 0;
+        }
 
         // Remove secondary legend when zoomed out
         d3.selectAll('.legend-group, tooltip, .tooltip-depth, .tooltip-size, .tooltip-dep')
