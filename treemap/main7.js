@@ -1022,7 +1022,7 @@ async function fetchData() {
             .style('left', `${x + 20}px`)
             .style('top', `${y - 20}px`)
             .html(
-              `<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Each rectangle within intervals of <strong style="color: #098094;">300ft / 100m</strong>.`
+              `<strong style="color: #098094;">Depth</strong><br/>The darker the shade, the greater the depth.<br/>*Each rectangle represents interval of <strong style="color: #098094;">300ft / 100m</strong>.`
             )
             .style(
               'transform',
