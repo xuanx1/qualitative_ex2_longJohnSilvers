@@ -1235,18 +1235,19 @@ async function fetchData() {
         .append('div')
         .attr('class', 'zoomed-fish-container')
         .style('position', 'absolute')
-        .style('top', `${d.y0}px`)
-        .style('left', `${d.x0}px`)
+        .style('top', `${d.y0 + (d.y1 - d.y0) / 2 + 500}px`)
+        .style('left', `${d.x0 + (d.x1 - d.x0) / 2 + -100}px`)
         .style('width', `${d.x1 - d.x0}px`)
         .style('height', `${d.y1 - d.y0}px`)
-        .style('pointer-events', 'auto')
-        .style('z-index', 1);
+        .style('pointer-events', 'tooltip-fish')
+        .style('z-index', 1)
+        .style('transform', 'translate(-50%, -50%)'); // Center the container
 
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 20; i++) {
         const recordLink = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
         const fish = zoomedFishContainer
           .append('a')
-          .attr('href', '#') // Sample link
+          .attr('href', 'http://n2t.net/ark:/65665/3631a7408-289c-4c1e-8904-cd460cad81d6') // Sample link
           .attr('target', '_blank')
           .append('img')
           .attr('src', recordLink)
@@ -1278,8 +1279,8 @@ async function fetchData() {
               .style('opacity', '0.9')
               .style('border-radius', '10px') // Add 10px radius
               .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-              .style('left', `${x + 20}px`)
-              .style('top', `${y + 20}px`)
+              .style('left', `${x + 200}px`)
+              .style('top', `${y + 500}px`)
               .html(`
               <img src="${recordLink}" alt="Fish Thumbnail" style="width: 250px; height: auto; border-radius: 5px;"><br/>
               <br/><strong style="color: #098094;font-size: 18pt;">Sample Fish</strong>
