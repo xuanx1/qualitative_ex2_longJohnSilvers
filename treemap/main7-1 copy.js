@@ -886,6 +886,19 @@ async function fetchData() {
         .domain([0, sortedLeaves.length - 1])
         .range([0.5, 5]);
           return d3.color(colourScale(selectedSeaname)).darker(shade(index));
+        })
+        .on('click', function (event, d) {
+          const isSelected = d3.select(this).classed('selected');
+          d3.selectAll('.detailed-node').classed('selected', false).style('opacity', 1);
+          d3.selectAll('.zoomed-fish-container img').style('opacity', 1);
+
+          if (!isSelected) {
+        d3.select(this).classed('selected', true);
+        d3.selectAll('.detailed-node').filter(node => node !== d).style('opacity', 0.3);
+        d3.selectAll('.zoomed-fish-container img').style('opacity', 0.3);
+          } else {
+        d3.select(this).classed('selected', false);
+          }
         });
 
       secondTreemap
@@ -1228,85 +1241,7 @@ async function fetchData() {
     console.log(detailedData);
 
 
-     
-    function createZoomedFish(d) {
-      const zoomedFishContainer = d3
-        .select('body')
-        .append('div')
-        .attr('class', 'zoomed-fish-container')
-        .style('position', 'absolute')
-        .style('top', `${d.y0 + (d.y1 - d.y0) / 2 + 500}px`)
-        .style('left', `${d.x0 + (d.x1 - d.x0) / 2 + -100}px`)
-        .style('width', `${d.x1 - d.x0}px`)
-        .style('height', `${d.y1 - d.y0}px`)
-        .style('pointer-events', 'tooltip-fish')
-        .style('z-index', 1)
-        .style('transform', 'translate(-50%, -50%)'); // Center the container
-
-      for (let i = 0; i < 20; i++) {
-        const recordLink = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
-        const fish = zoomedFishContainer
-          .append('a')
-          .attr('href', 'http://n2t.net/ark:/65665/3631a7408-289c-4c1e-8904-cd460cad81d6') // Sample link
-          .attr('target', '_blank')
-          .append('img')
-          .attr('src', recordLink)
-          .style('position', 'absolute')
-          .style('width', `${Math.random() * 30 + 50}px`) // Randomise size
-          .style('height', 'auto')
-          .style('top', `${Math.random() * 100}%`)
-          .style('left', `${Math.random() * 100}%`)
-          .style('filter', `hue-rotate(${Math.random() * 360}deg)`) // Randomise color
-          .style('transition', 'transform 5s linear')
-          
-          
-          
-          .on('mouseover', function (event) {
-            const [x, y] = d3.pointer(event);
-            const tooltip = d3
-              
-              .select('body')
-              .append('div')
-              .attr('class', 'tooltip-fish')
-              .style('position', 'absolute')
-              .style('font-size', '14px')
-              .style('font-family', "'Open Sans', sans-serif")
-              .style('font-weight', 'regular')
-              .style('background', 'white')
-              .style('border', '1.5px solid #72757c')
-              .style('padding', '15px')
-              .style('pointer-events', 'auto')
-              .style('opacity', '0.9')
-              .style('border-radius', '10px') // Add 10px radius
-              .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-              .style('left', `${x + 200}px`)
-              .style('top', `${y + 500}px`)
-              .html(`
-              <img src="${recordLink}" alt="Fish Thumbnail" style="width: 250px; height: auto; border-radius: 5px;"><br/>
-              <br/><strong style="color: #098094;font-size: 18pt;">Sample Fish</strong>
-              <br/><i style="color: #808080; font-size: 10pt;">Sample Title</i><br/>
-              <br/><span style="color: #808080;">Ocean</span> <strong style="color: #098094;">Sample Ocean</strong>
-              <br/><span style="color: #808080;">Archetype</span> <strong style="color: #098094;">Sample Archetype</strong>
-              <br/><span style="color: #808080;">Depth</span> <strong style="color: #098094;">100 m</strong>
-              <div id="map-sample" style="width: 250px; height: 150px; margin-top: 10px; border-radius: 5px;"></div>
-              `);
-
-            // Initialize Leaflet map inside the tooltip
-            const map = L.map('map-sample', { zoomControl: false }).setView([40.7847, -73.9574], 12);
-            
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg', {
-              attribution:
-              '<a href="http://stamen.com">Stamen Design</a>',
-              maxZoom: 18,
-            }).addTo(map);
-            })
-            .on('mouseout', function () {
-            d3.select('.tooltip-fish').remove();
-          });
-
-        animateFish(fish);
-      }
-    }
+    
 
 
     //zoom in
@@ -1330,6 +1265,85 @@ async function fetchData() {
         .style('opacity', 1); // Fade in zoomed fish
 
       zoom(d, width, height, margin, svg, nodes);
+      function createZoomedFish(d) {
+        const zoomedFishContainer = d3
+          .select('body')
+          .append('div')
+          .attr('class', 'zoomed-fish-container')
+          .style('position', 'absolute')
+          .style('top', `850px`)
+          .style('left', `900px`)
+          .style('width', `800px`)
+          .style('height', `800px`)
+          .style('pointer-events', 'tooltip-fish')
+          .style('z-index', 1)
+          .style('transform', 'translate(-50%, -50%)'); // Center the container
+  
+        for (let i = 0; i <20; i++) {
+          const recordLink = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
+          const fish = zoomedFishContainer
+            .append('a')
+            .attr('href', 'http://n2t.net/ark:/65665/3631a7408-289c-4c1e-8904-cd460cad81d6') // Sample link
+            .attr('target', '_blank')
+            .append('img')
+            .attr('src', recordLink)
+            .style('position', 'absolute')
+            .style('width', `${Math.random() * 30 + 50}px`) // Randomise size
+            .style('height', 'auto')
+            .style('top', `${Math.random() * 100}%`)
+            .style('left', `${Math.random() * 100}%`)
+            .style('filter', `hue-rotate(${Math.random() * 360}deg)`) // Randomise color
+            .style('transition', 'transform 5s linear')
+            
+            
+            
+            .on('mouseover', function (event) {
+              const [x, y] = d3.pointer(event);
+              const tooltip = d3
+                
+                .select('body')
+                .append('div')
+                .attr('class', 'tooltip-fish')
+                .style('position', 'absolute')
+                .style('font-size', '14px')
+                .style('font-family', "'Open Sans', sans-serif")
+                .style('font-weight', 'regular')
+                .style('background', 'white')
+                .style('border', '1.5px solid #72757c')
+                .style('padding', '15px')
+                .style('z-index', 10)
+                .style('pointer-events', 'auto')
+                .style('opacity', '0.9')
+                .style('border-radius', '10px') // Add 10px radius
+                .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+                .style('left', `${x + 200}px`)
+                .style('top', `${y + 500}px`)
+                .html(`
+                <img src="${recordLink}" alt="Fish Thumbnail" style="width: 250px; height: auto; border-radius: 5px;"><br/>
+                <br/><strong style="color: #098094;font-size: 18pt;">Sample Fish</strong>
+                <br/><i style="color: #808080; font-size: 10pt;">Sample Title</i><br/>
+                <br/><span style="color: #808080;">Ocean</span> <strong style="color: #098094;">Sample Ocean</strong>
+                <br/><span style="color: #808080;">Archetype</span> <strong style="color: #098094;">Sample Archetype</strong>
+                <br/><span style="color: #808080;">Depth</span> <strong style="color: #098094;">100 m</strong>
+                <div id="map-sample" style="width: 250px; height: 150px; margin-top: 10px; border-radius: 5px;"></div>
+                `);
+  
+              // Initialize Leaflet map inside the tooltip
+              const map = L.map('map-sample', { zoomControl: false }).setView([40.7847, -73.9574], 12);
+              
+              L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg', {
+                attribution:
+                '<a href="http://stamen.com">Stamen Design</a>',
+                maxZoom: 18,
+              }).addTo(map);
+              })
+              .on('mouseout', function () {
+              d3.select('.tooltip-fish').remove();
+            });
+  
+          animateFish(fish);
+        }
+      }
     });
 
     //zoom out
