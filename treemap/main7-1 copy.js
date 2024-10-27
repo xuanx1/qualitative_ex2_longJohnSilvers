@@ -894,8 +894,8 @@ async function fetchData() {
 
           if (!isSelected) {
         d3.select(this).classed('selected', true);
-        d3.selectAll('.detailed-node').filter(node => node !== d).style('opacity', 0.3);
-        d3.selectAll('.zoomed-fish-container img').style('opacity', 0.3);
+        d3.selectAll('.detailed-node').filter(node => node !== d).style('opacity', 0.2);
+        d3.selectAll('.zoomed-fish-container img').style('opacity', 0.2);
           } else {
         d3.select(this).classed('selected', false);
           }
