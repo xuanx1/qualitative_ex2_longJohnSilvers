@@ -1284,7 +1284,7 @@ async function fetchData() {
           const recordLink = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
           const fish = zoomedFishContainer
             .append('a')
-            .attr('href', 'http://n2t.net/ark:/65665/3631a7408-289c-4c1e-8904-cd460cad81d6') // Sample link
+            .attr('href', 'http://n2t.net/ark:/65665/3d450e2ec-5f25-4e92-83bf-0421dc2a9ee1') // Sample link
             .attr('target', '_blank')
             .append('img')
             .attr('src', recordLink)
@@ -1320,19 +1320,21 @@ async function fetchData() {
                 .style('left', `${x + 200}px`)
                 .style('top', `${y + 500}px`)
                 .html(`
-                <img src="${recordLink}" alt="Fish Thumbnail" style="width: 250px; height: auto; border-radius: 5px;"><br/>
-                <br/><strong style="color: #098094;font-size: 18pt;">Sample Fish</strong>
-                <br/><i style="color: #808080; font-size: 10pt;">Sample Title</i><br/>
-                <br/><span style="color: #808080;">Ocean</span> <strong style="color: #098094;">Sample Ocean</strong>
-                <br/><span style="color: #808080;">Archetype</span> <strong style="color: #098094;">Sample Archetype</strong>
-                <br/><span style="color: #808080;">Depth</span> <strong style="color: #098094;">100 m</strong>
+                <img src="${'https://collections.nmnh.si.edu/media/?i=10332923'}" alt="Fish Thumbnail" style="width: 250px; height: auto; border-radius: 5px;"><br/>
+                <br/><strong style="color: #098094;font-size: 18pt;">Priolepis snapper</strong>
+                <br/><i style="color: #808080; font-size: 10pt;">riolepis semidoliata</i><br/>
+                <br/><span style="color: #808080;">Ocean</span> <strong style="color: #098094;">Pacific Ocean</strong>
+                <br/><span style="color: #808080;">Archetype</span> <strong style="color: #098094;">Prey</strong>
+                <br/><span style="color: #808080;">Depth</span> <strong style="color: #098094;">1 m</strong>
                 <div id="map-sample" style="width: 250px; height: 150px; margin-top: 10px; border-radius: 5px;"></div>
                 `);
   
               // Initialize Leaflet map inside the tooltip
-              const map = L.map('map-sample', { zoomControl: false }).setView([40.7847, -73.9574], 12);
+                const map = L.map('map-sample', { zoomControl: false }).setView([-21.8506, -138.887], 1);
+                
+                L.marker([-21.8506, -138.887]).addTo(map).getElement().style.filter = 'grayscale(100%)';
               
-              L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg', {
+                L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg', {
                 attribution:
                 '<a href="http://stamen.com">Stamen Design</a>',
                 maxZoom: 18,
