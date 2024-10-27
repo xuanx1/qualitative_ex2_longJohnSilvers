@@ -1291,13 +1291,16 @@ async function fetchData() {
           .style('position', 'absolute')
           .style('top', `850px`)
           .style('left', `900px`)
-          .style('width', `800px`)
-          .style('height', `800px`)
-          .style('pointer-events', 'tooltip-fish')
+          .style('width', `1200px`)
+          .style('height', `820px`)
+          .style('pointer-events', 'none') // Allow clicks to pass through
           .style('z-index', 1)
           .style('transform', 'translate(-50%, -50%)'); // Center the container
-  
+
         for (let i = 0; i < filteredData.length; i++) {
+          // Ensure the fish images can still receive pointer events
+          zoomedFishContainer.selectAll('img')
+            .style('pointer-events', 'auto');
           const icons = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
 
           const thumbnails = filteredData.map((d) => d.thumbnail);
@@ -1320,11 +1323,11 @@ async function fetchData() {
             .append('img')
             .attr('src', icons)
             .style('position', 'absolute')
-            .style('width', `${Math.random() * 30 + 50}px`) // Randomise size
+            .style('width', `${Math.random() * 30 + 20}px`) // Randomise size
             .style('height', 'auto')
             .style('top', `${Math.random() * 100}%`)
             .style('left', `${Math.random() * 100}%`)
-            .style('filter', `hue-rotate(${Math.random() * 360}deg)`) // Randomise color
+            .style('filter', `hue-rotate(${Math.random() * 360}deg) brightness(${Math.random() * 0.5 + 0.75}) saturate(${Math.random() * 0.5 + 0.75})`) // Randomise color with greater variation
             .style('transition', 'transform 5s linear')
             
             
@@ -1343,7 +1346,7 @@ async function fetchData() {
                 .style('border', '1.5px solid #72757c')
                 .style('padding', '15px')
                 .style('z-index', 10)
-                .style('pointer-events', 'auto')
+                .style('pointer-events', 'none')
                 .style('opacity', '0.9')
                 .style('border-radius', '10px') // Add 10px radius
                 .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
