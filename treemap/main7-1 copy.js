@@ -1275,11 +1275,12 @@ async function fetchData() {
           .style('left', `900px`)
           .style('width', `800px`)
           .style('height', `800px`)
-          .style('pointer-events', 'tooltip-fish')
+          .style('pointer-events', 'auto') 
           .style('z-index', 1)
           .style('transform', 'translate(-50%, -50%)'); // Center the container
   
-        for (let i = 0; i <20; i++) {
+        const fishCount = Math.ceil(d.value / 20); // Number of fishes is ratio of 1 image to 20 species count
+        for (let i = 0; i < fishCount; i++) {
           const recordLink = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
           const fish = zoomedFishContainer
             .append('a')
