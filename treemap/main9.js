@@ -18,7 +18,6 @@ let stateObject = {
   selectedDepth: null,
 };
 
-
 // Loading screen --------------------------------------------
 const loadingScreen = d3
   .select('body')
@@ -175,7 +174,7 @@ async function fetchData() {
       (v) => v.length,
       (d) => getOcean(d.ocean),
       (d) => d.newGroup
-            //d => d.depth //to be add during phase 2
+      //d => d.depth //to be add during phase 2
     );
 
     console.log('Predator/Prey by Oceans, then Depths:');
@@ -375,12 +374,12 @@ async function fetchData() {
     const title = body
       .append('h1')
       .style('font-size', '56px')
-      .style('font-family', "'Shorelines Script', sans-serif")
+      .style('font-family', "'Lost Fish', sans-serif")
       .style('font-weight', 'regular')
       .style('color', '#098094')
       .style('text-align', 'center')
       .style('padding-bottom', '20px')
-      .text('Helloooo Neighbours...');
+      .text('Deep Sea Society');
 
     // fade-in animation for title
     title.style('opacity', 0).transition().duration(1000).style('opacity', 1);
@@ -416,7 +415,7 @@ async function fetchData() {
       .sum(([, value]) => value)
       .sort((a, b) => b.value - a.value);
 
-      console.log(root);
+    console.log(root);
 
     // Set up the dimensions of the treemap
     const width = window.innerWidth * 0.8;
@@ -448,7 +447,9 @@ async function fetchData() {
     console.log(root.leaves());
 
     // Create group ID (ocean + newGroup)
-    const groupIDs = root.leaves().map((d) => d.parent.data[0].replace(/\s+/g, '-') + '_' + d.data[0]);
+    const groupIDs = root
+      .leaves()
+      .map((d) => d.parent.data[0].replace(/\s+/g, '-') + '_' + d.data[0]);
 
     // Create a group for each node
     const nodes = svg
@@ -457,10 +458,9 @@ async function fetchData() {
       .enter()
       .append('g')
       .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
-      .attr("id", (d, i) => {
+      .attr('id', (d, i) => {
         return `${groupIDs[i]}`;
-        
-    });
+      });
 
     // Define colourScale
     const colourScale = d3
@@ -487,17 +487,17 @@ async function fetchData() {
       .attr('stroke', 'white')
       .attr('stroke-width', 1)
       .attr('fill', (d) => {
-      const parentColor = colourScale(d.parent.data[0]);
-      const shade = d3
-        .scaleLinear()
-        .domain([0, d.parent.children.length - 1])
-        .range([0.1, 0.5]); // Adjust the range to change the darkness of the shade
-      return d3
-        .color(parentColor)
-        .darker(shade(d.parent.children.indexOf(d)));
+        const parentColor = colourScale(d.parent.data[0]);
+        const shade = d3
+          .scaleLinear()
+          .domain([0, d.parent.children.length - 1])
+          .range([0.1, 0.5]); // Adjust the range to change the darkness of the shade
+        return d3
+          .color(parentColor)
+          .darker(shade(d.parent.children.indexOf(d)));
       })
       .attr('fill-opacity', 0.9);
-    
+
     // Append text labels
     nodes
       .append('text')
@@ -515,36 +515,36 @@ async function fetchData() {
         const bbox = this.getBBox();
         if (bbox.width > d.x1 - d.x0 || bbox.height > d.y1 - d.y0) {
           d3.select(this).remove();
-          
-        }             //More info for each treemap rect/node --------------------------------------------
-            // Hover effect to display total number + proportion of species deactivate hover effect for node info displaying total number + proportion of species when zoomed in and activate when zoomed out
-            nodes
-              .on('mouseover', function (event, d) {
-                if (stateObject.treemapLevel === 0) {
-                  // Only show tooltip for top-level nodes
-                  d3.select(this)
-                    .select('rect')
-                    .attr('stroke', '#ac513b')
-                    .attr('stroke-width', 4);
+        } //More info for each treemap rect/node --------------------------------------------
+        // Hover effect to display total number + proportion of species deactivate hover effect for node info displaying total number + proportion of species when zoomed in and activate when zoomed out
+        nodes
+          .on('mouseover', function (event, d) {
+            if (stateObject.treemapLevel === 0) {
+              // Only show tooltip for top-level nodes
+              d3.select(this)
+                .select('rect')
+                .attr('stroke', '#ac513b')
+                .attr('stroke-width', 4);
 
-                  const [x, y] = d3.pointer(event);
+              const [x, y] = d3.pointer(event);
 
-                  d3.select('body')
-                    .append('div') //popup window for Species info
-                    .attr('class', 'tooltip')
-                    .style('position', 'absolute')
-                    .style('font-size', '14px')
-                    .style('font-family', "'Open Sans', sans-serif")
-                    .style('font-weight', 'regular')
-                    .style('background', 'white')
-                    .style('border', '1.5px solid #72757c')
-                    .style('padding', '10px')
-                    .style('pointer-events', 'none')
-                    .style('opacity', '0.9')
-                    .style('border-radius', '10px') // Add 10px radius
-                    .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
-                    .style('left', `${event.pageX + 20}px`)
-                    .style('top', `${event.pageY + 20}px`).html(`
+              d3
+                .select('body')
+                .append('div') //popup window for Species info
+                .attr('class', 'tooltip')
+                .style('position', 'absolute')
+                .style('font-size', '14px')
+                .style('font-family', "'Open Sans', sans-serif")
+                .style('font-weight', 'regular')
+                .style('background', 'white')
+                .style('border', '1.5px solid #72757c')
+                .style('padding', '10px')
+                .style('pointer-events', 'none')
+                .style('opacity', '0.9')
+                .style('border-radius', '10px') // Add 10px radius
+                .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
+                .style('left', `${event.pageX + 20}px`)
+                .style('top', `${event.pageY + 20}px`).html(`
                           <strong style="color: #098094;">${d.data[0]}</strong>
                           <br/>Ocean: <strong style="color: #098094;">${
                             d.parent.data[0]
@@ -561,14 +561,15 @@ async function fetchData() {
                             d.value
                           }</strong>
                         `);
-                }
-              })
-              .on('mouseout', function () {
-                d3.select(this).select('rect').attr('stroke', 'white').attr('stroke-width', 1.5);
-                d3.select('.tooltip').remove();
-              });
-
-        
+            }
+          })
+          .on('mouseout', function () {
+            d3.select(this)
+              .select('rect')
+              .attr('stroke', 'white')
+              .attr('stroke-width', 1.5);
+            d3.select('.tooltip').remove();
+          });
       });
 
     // Add fade-in and scale animation for the treemap nodes
@@ -735,12 +736,9 @@ async function fetchData() {
           .html(
             `<strong style="color: #098094;">${oceanInfo.name}</strong><br/>Area: <strong style="color: #098094;">${oceanInfo.area}</strong> <em style="color: grey;">${oceanInfo.metric}</em><br/>Depth: <strong style="color: #098094;">${oceanInfo.depth}</strong>  <em style="color: grey;">${oceanInfo.metricd}</em><br/><br/>${oceanInfo.description}`
           );
-          
       })
-      
-      .on('mouseout', function (event, d) {
-        
 
+      .on('mouseout', function (event, d) {
         // Remove highlight from the corresponding ocean nodes
         nodes
           .filter((node) => node.parent.data[0] === d)
@@ -752,14 +750,9 @@ async function fetchData() {
 
         // Remove ocean introduction text box
         body.select('.ocean-intro').remove();
-
-
-        
       });
 
     //--------------------------------------------
-
-
 
     //--------------------------------------------
 
@@ -806,7 +799,6 @@ async function fetchData() {
     }
 
     function zoom(d, width, height, margin, svg, nodes) {
-
       // Update StateObject
       stateObject.treemapLevel = 1;
 
@@ -845,14 +837,14 @@ async function fetchData() {
       //tree map description disappear when zoom in
       description.transition().duration(500).style('opacity', 0);
 
-
-  
-
       // Aggregate the data for the selected ocean and archetype
       const selectedSeaname = d.parent.data[0];
       const selectedNewGroup = d.data[0];
       let rolledupData = getDetailedData(selectedSeaname)[selectedNewGroup];
-      rolledupData = Array.from(rolledupData, ([key, value]) => ({name: key, value}));
+      rolledupData = Array.from(rolledupData, ([key, value]) => ({
+        name: key,
+        value,
+      }));
       rolledupData = rolledupData.sort((a, b) => b.value - a.value);
 
       // Update StateObject
@@ -860,65 +852,77 @@ async function fetchData() {
       stateObject.selectedNewGroup = selectedNewGroup;
       console.log(stateObject);
 
-      const secondTreemapRoot = d3.hierarchy({ values: rolledupData }, d => d.values).sum(d => d.value);
+      const secondTreemapRoot = d3
+        .hierarchy({ values: rolledupData }, (d) => d.values)
+        .sum((d) => d.value);
 
-      d3.treemap()
-        .size([width, height])
-        .padding(5)
-        .round(true)(secondTreemapRoot);
-      
+      d3.treemap().size([width, height]).padding(5).round(true)(
+        secondTreemapRoot
+      );
+
       // Create a group for each node
-      const groupID = `${selectedSeaname.replace(/\s+/g, '-')}_${selectedNewGroup}`;
+      const groupID = `${selectedSeaname.replace(
+        /\s+/g,
+        '-'
+      )}_${selectedNewGroup}`;
       const secondTreemap = d3.select(`#${groupID}`);
 
-
       // Sort the leaves by depth ranges numerically
-      const sortedLeaves = secondTreemapRoot.leaves().sort((a, b) => b.value - a.value);
+      const sortedLeaves = secondTreemapRoot
+        .leaves()
+        .sort((a, b) => b.value - a.value);
 
       secondTreemap
         .selectAll('rect')
-        .data(sortedLeaves, d => d.data.name)
-        .enter().append('rect')
+        .data(sortedLeaves, (d) => d.data.name)
+        .enter()
+        .append('rect')
         .attr('class', 'detailed-node')
-        .attr("x", d => d.x0)
-        .attr("y", d => d.y0)
-        .attr("width", d => d.x1 - d.x0)
-        .attr("height", d => d.y1 - d.y0)
+        .attr('x', (d) => d.x0)
+        .attr('y', (d) => d.y0)
+        .attr('width', (d) => d.x1 - d.x0)
+        .attr('height', (d) => d.y1 - d.y0)
         .attr('fill-opacity', 0.9)
         .attr('stroke', 'white')
         .attr('stroke-width', 1.5)
         .attr('id', (d, i) => {
           return `${groupID}_${d.data.name}`;
         })
-        .attr('fill', d => {
+        .attr('fill', (d) => {
           const index = sortedLeaves.indexOf(d);
-          const shade = d3.scaleLinear()
-        .domain([0, sortedLeaves.length - 1])
-        .range([0.5, 5]);
+          const shade = d3
+            .scaleLinear()
+            .domain([0, sortedLeaves.length - 1])
+            .range([0.5, 5]);
           return d3.color(colourScale(selectedSeaname)).darker(shade(index));
         })
         .on('click', function (event, d) {
           const isSelected = d3.select(this).classed('selected');
-          d3.selectAll('.detailed-node').classed('selected', false).style('opacity', 1);
+          d3.selectAll('.detailed-node')
+            .classed('selected', false)
+            .style('opacity', 1);
           d3.selectAll('.zoomed-fish-container img').style('opacity', 1);
 
           if (!isSelected) {
-        d3.select(this).classed('selected', true);
-        d3.selectAll('.detailed-node').filter(node => node !== d).style('opacity', 0.2);
-        d3.selectAll('.zoomed-fish-container img').style('opacity', 0.2);
+            d3.select(this).classed('selected', true);
+            d3.selectAll('.detailed-node')
+              .filter((node) => node !== d)
+              .style('opacity', 0.2);
+            d3.selectAll('.zoomed-fish-container img').style('opacity', 0.2);
           } else {
-        d3.select(this).classed('selected', false);
+            d3.select(this).classed('selected', false);
           }
         });
 
       secondTreemap
         .selectAll('text')
-        .data(sortedLeaves, d => d.data.name)
-        .enter().append('text')
-        .text(d => d.data.name)
+        .data(sortedLeaves, (d) => d.data.name)
+        .enter()
+        .append('text')
+        .text((d) => d.data.name)
         .attr('class', 'detailed-node')
-        .attr("x", d => d.x0 + 5)
-        .attr("y", d => d.y0 + 20)
+        .attr('x', (d) => d.x0 + 5)
+        .attr('y', (d) => d.y0 + 20)
         .style('font-family', "'Open Sans', sans-serif")
         .style('font-weight', 'regular')
         .style('fill', 'white')
@@ -926,7 +930,7 @@ async function fetchData() {
         .each(function (d) {
           const bbox = this.getBBox();
           if (bbox.width > d.x1 - d.x0 - 10 || bbox.height > d.y1 - d.y0 - 10) {
-        d3.select(this).remove();
+            d3.select(this).remove();
           }
         });
 
@@ -934,16 +938,15 @@ async function fetchData() {
       secondTreemap
         .selectAll('rect')
         .on('mouseover', function (event, d) {
-          if (stateObject.treemapLevel === 1 & d.data.name !== undefined) {
-            d3.select(this)
-              .attr('stroke', '#ac513b')
-              .attr('stroke-width', 4);
-              
+          if ((stateObject.treemapLevel === 1) & (d.data.name !== undefined)) {
+            d3.select(this).attr('stroke', '#ac513b').attr('stroke-width', 4);
+
             const [x, y] = d3.pointer(event);
 
             stateObject.selectedDepth = d.data.name;
-            
-            d3.select('body')
+
+            d3
+              .select('body')
               .append('div')
               .attr('class', 'tooltip-dep')
               .style('position', 'absolute')
@@ -958,26 +961,27 @@ async function fetchData() {
               .style('border-radius', '10px') // Add 10px radius
               .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
               .style('left', `${x + 120}px`)
-              .style('top', `${y + 320}px`)
-              .html(`Depth Range: 
+              .style('top', `${y + 320}px`).html(`Depth Range: 
                 <strong style="color: #098094;">${d.data.name}</strong>
                 <br/><br/>Proportion: <strong style="color: #098094;">${Math.round(
                   (d.value / d.parent.value) * 100
                 )}%</strong>
                 <div style="width: 100%; background: #ddd; border-radius: 5px; margin-top: 5px;">
                   <div style="width: ${Math.round(
-                (d.value / d.parent.value) * 100
+                    (d.value / d.parent.value) * 100
                   )}%; background: #098094; height: 10px; border-radius: 5px;"></div>
                 </div>
-                <br/>Species Count: <strong style="color: #098094;">${d.value}</strong>
+                <br/>Species Count: <strong style="color: #098094;">${
+                  d.value
+                }</strong>
               `);
-            }
-          })
+          }
+        })
         .on('mouseout', function () {
           d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5);
           d3.select('.tooltip-dep').remove();
         });
-      
+
       // Secondary Legend, appears when zoomed in and hides when zoom out --------------------------------------------
       // Depth
       const legendDepth = {
@@ -1073,76 +1077,76 @@ async function fetchData() {
       const legendSize = {
         squares: [
           {
-        x: 10,
-        y: 10,
-        size: 80,
-        color: d3.color(colourScale(d.parent.data[0])).brighter(0),
+            x: 10,
+            y: 10,
+            size: 80,
+            color: d3.color(colourScale(d.parent.data[0])).brighter(0),
           },
           {
-        x: 10,
-        y: 30,
-        size: 60,
-        color: d3.color(colourScale(d.parent.data[0])).darker(0.3),
+            x: 10,
+            y: 30,
+            size: 60,
+            color: d3.color(colourScale(d.parent.data[0])).darker(0.3),
           },
           {
-        x: 10,
-        y: 50,
-        size: 40,
-        color: d3.color(colourScale(d.parent.data[0])).darker(0.5),
+            x: 10,
+            y: 50,
+            size: 40,
+            color: d3.color(colourScale(d.parent.data[0])).darker(0.5),
           },
         ],
         draw: function (svg) {
           svg
-        .selectAll('rect')
-        .data(this.squares)
-        .enter()
-        .append('rect')
-        .attr('x', (d) => d.x)
-        .attr('y', (d) => d.y)
-        .attr('width', (d) => d.size)
-        .attr('height', (d) => d.size)
-        .attr('fill', (d) => d.color)
-        .attr('stroke', 'white') // Add white stroke
-        .attr('stroke-width', 1) // Set stroke width
-        .on('mouseover', function (event, d) {
-          const [x, y] = d3.pointer(event);
-          d3.select('body')
-            .append('div')
-            .attr('class', 'tooltip-size')
-            .style('position', 'absolute')
-            .style('font-size', '14px')
-            .style('font-family', "'Open Sans', sans-serif")
-            .style('font-weight', 'regular')
-            .style('background', 'white')
-            .style('border', '2px solid #72757c')
-            .style('padding', '10px')
-            .style('pointer-events', 'none')
-            .style('opacity', '0.9')
-            .style('border-radius', '10px') // radius
-            .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // drop shadow
-            .style('left', `${x + 20}px`)
-            .style('top', `${y + 20}px`)
-            .html(
-          `<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`
-            )
-            .style(
-          'transform',
-          `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`
-            );
-        })
-        .on('mouseout', function () {
-          d3.select('.tooltip-size').remove();
-        });
+            .selectAll('rect')
+            .data(this.squares)
+            .enter()
+            .append('rect')
+            .attr('x', (d) => d.x)
+            .attr('y', (d) => d.y)
+            .attr('width', (d) => d.size)
+            .attr('height', (d) => d.size)
+            .attr('fill', (d) => d.color)
+            .attr('stroke', 'white') // Add white stroke
+            .attr('stroke-width', 1) // Set stroke width
+            .on('mouseover', function (event, d) {
+              const [x, y] = d3.pointer(event);
+              d3.select('body')
+                .append('div')
+                .attr('class', 'tooltip-size')
+                .style('position', 'absolute')
+                .style('font-size', '14px')
+                .style('font-family', "'Open Sans', sans-serif")
+                .style('font-weight', 'regular')
+                .style('background', 'white')
+                .style('border', '2px solid #72757c')
+                .style('padding', '10px')
+                .style('pointer-events', 'none')
+                .style('opacity', '0.9')
+                .style('border-radius', '10px') // radius
+                .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // drop shadow
+                .style('left', `${x + 20}px`)
+                .style('top', `${y + 20}px`)
+                .html(
+                  `<strong style="color: #098094;">Species Volume</strong><br/>The larger the cube,<br/>the greater the volume of species.`
+                )
+                .style(
+                  'transform',
+                  `translate(${event.pageX - 40}px, ${event.pageY - 40}px)`
+                );
+            })
+            .on('mouseout', function () {
+              d3.select('.tooltip-size').remove();
+            });
 
           svg
-        .append('line')
-        .attr('x1', 50)
-        .attr('y1', 50)
-        .attr('x2', 90)
-        .attr('y2', 10)
-        .attr('stroke', 'white')
-        .attr('stroke-width', 1)
-        .attr('stroke-dasharray', '4 6');
+            .append('line')
+            .attr('x1', 50)
+            .attr('y1', 50)
+            .attr('x2', 90)
+            .attr('y2', 10)
+            .attr('stroke', 'white')
+            .attr('stroke-width', 1)
+            .attr('stroke-dasharray', '4 6');
         },
       };
 
@@ -1186,8 +1190,6 @@ async function fetchData() {
         .transition()
         .duration(1200)
         .style('opacity', 1);
-
-
     }
 
     nodes.on('click', function (event, d) {
@@ -1227,11 +1229,11 @@ async function fetchData() {
     // second tree map to have fishes swimming inside each rectangle of the treemap, only populated by randomized swimming fishes fading in when zoom in is complete, fishes will fit into the final dimenions of the rectangle. d3 force fit to be used to simulate fish swimming inside the rectangle, front of treemap
     //zoom in - // Fade out background fish - // Fade in fish in each rectangle
 
-//zoom out - // Remove zoomed fish - // Fade in background fish
+    //zoom out - // Remove zoomed fish - // Fade in background fish
 
     const thumbnails = await d3.json('./data/imgv2.json');
 
-    const thumbnailMap = new Map(thumbnails.map(d => [d.id, d.thumbnail]));
+    const thumbnailMap = new Map(thumbnails.map((d) => [d.id, d.thumbnail]));
 
     const detailedData = d3.rollup(
       response,
@@ -1259,17 +1261,17 @@ async function fetchData() {
         .on('end', function () {
           d3.select(this).style('display', 'none');
         });
-      
-      d3.selectAll('.zoomed-fish-container').remove(); // Remove previous zoomed fish      
+
+      d3.selectAll('.zoomed-fish-container').remove(); // Remove previous zoomed fish
 
       // Filter Data depending on the state object
-      console.log("filter start")
-      console.log("stateobject", stateObject);
+      console.log('filter start');
+      console.log('stateobject', stateObject);
       const filteredData = Array.from(detailedData.values()).filter(
         (d) =>
-          d.ocean === stateObject.selectedOcean
-          && d.newGroup === stateObject.selectedNewGroup
-          && d.depth === stateObject.selectedDepth
+          d.ocean === stateObject.selectedOcean &&
+          d.newGroup === stateObject.selectedNewGroup &&
+          d.depth === stateObject.selectedDepth
       );
 
       createZoomedFish(filteredData);
@@ -1283,7 +1285,6 @@ async function fetchData() {
       zoom(d, width, height, margin, svg, nodes);
 
       function createZoomedFish(filteredData) {
-
         const zoomedFishContainer = d3
           .select('body')
           .append('div')
@@ -1299,12 +1300,12 @@ async function fetchData() {
 
         for (let i = 0; i < filteredData.length; i++) {
           // Ensure the fish images can still receive pointer events
-          zoomedFishContainer.selectAll('img')
-            .style('pointer-events', 'auto');
-          const icons = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
+          zoomedFishContainer.selectAll('img').style('pointer-events', 'auto');
+          const icons =
+            possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
 
           const thumbnails = filteredData.map((d) => d.thumbnail);
-          
+
           const name = filteredData.map((d) => d.common_name);
           const sci_name = filteredData.map((d) => d.title);
           const desPage = filteredData.map((d) => d.record_link);
@@ -1314,8 +1315,8 @@ async function fetchData() {
           const lat = filteredData.map((d) => d.latitude);
           const long = filteredData.map((d) => d.longitude);
 
-
-          const recordLink = thumbnails[Math.floor(Math.random() * possiblePaths.length)];
+          const recordLink =
+            thumbnails[Math.floor(Math.random() * possiblePaths.length)];
           const fish = zoomedFishContainer
             .append('a')
             .attr('href', desPage[i])
@@ -1327,14 +1328,17 @@ async function fetchData() {
             .style('height', 'auto')
             .style('top', `${Math.random() * 100}%`)
             .style('left', `${Math.random() * 100}%`)
-            .style('filter', `hue-rotate(${Math.random() * 360}deg) brightness(${Math.random() * 0.5 + 0.75}) saturate(${Math.random() * 0.5 + 0.75})`) // Randomise color with greater variation
+            .style(
+              'filter',
+              `hue-rotate(${Math.random() * 360}deg) brightness(${
+                Math.random() * 0.5 + 0.75
+              }) saturate(${Math.random() * 0.5 + 0.75})`
+            ) // Randomise color with greater variation
             .style('transition', 'transform 5s linear')
-            
-            
-            
+
             .on('mouseover', function (event) {
               const [x, y] = d3.pointer(event);
-                const tooltip = d3
+              const tooltip = d3
                 .select('body')
                 .append('div')
                 .attr('class', 'tooltip-fish')
@@ -1351,32 +1355,47 @@ async function fetchData() {
                 .style('border-radius', '10px') // Add 10px radius
                 .style('box-shadow', '0px 5px 5px rgba(0, 0, 0, 0.3)') // Add drop shadow
                 .style('left', `${x + 200}px`)
-                .style('top', `${y + 500}px`)
-                .html(`
+                .style('top', `${y + 500}px`).html(`
                 <img src="${recordLink}" alt="Fish Thumbnail" style="width: 250px; height: auto; border-radius: 5px;"><br/>
-                <br/><strong style="color: #098094;font-size: 18pt;">${name[i]}</strong>
-                <br/><i style="color: #808080; font-size: 10pt;">${sci_name[i]}</i><br/>
-                <br/><span style="color: #808080;">Ocean</span> <strong style="color: #098094;">${ocean[i]}</strong>
-                <br/><span style="color: #808080;">Archetype</span> <strong style="color: #098094;">${arche[i]}</strong>
-                <br/><span style="color: #808080;">Depth</span> <strong style="color: #098094;">${response.find(d => d.id === filteredData[i].id).depth}</strong>
+                <br/><strong style="color: #098094;font-size: 18pt;">${
+                  name[i]
+                }</strong>
+                <br/><i style="color: #808080; font-size: 10pt;">${
+                  sci_name[i]
+                }</i><br/>
+                <br/><span style="color: #808080;">Ocean</span> <strong style="color: #098094;">${
+                  ocean[i]
+                }</strong>
+                <br/><span style="color: #808080;">Archetype</span> <strong style="color: #098094;">${
+                  arche[i]
+                }</strong>
+                <br/><span style="color: #808080;">Depth</span> <strong style="color: #098094;">${
+                  response.find((d) => d.id === filteredData[i].id).depth
+                }</strong>
                 <div id="map-sample" style="width: 250px; height: 150px; margin-top: 10px; border-radius: 5px;"></div>
                 `);
-  
+
               // Initialize Leaflet map inside the tooltip
-              const map = L.map('map-sample', { zoomControl: false }).setView([lat[i], long[i]], 2);
-              
-              L.marker([lat[i], long[i]]).addTo(map).getElement().style.filter = 'grayscale(100%)';
-              
-              L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg', {
-                attribution:
-                '<a href="http://stamen.com">Stamen Design</a>',
-                maxZoom: 18,
-              }).addTo(map);
-              })
-              .on('mouseout', function () {
+              const map = L.map('map-sample', { zoomControl: false }).setView(
+                [lat[i], long[i]],
+                2
+              );
+
+              L.marker([lat[i], long[i]]).addTo(map).getElement().style.filter =
+                'grayscale(100%)';
+
+              L.tileLayer(
+                'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+                {
+                  attribution: '<a href="http://stamen.com">Stamen Design</a>',
+                  maxZoom: 18,
+                }
+              ).addTo(map);
+            })
+            .on('mouseout', function () {
               d3.select('.tooltip-fish').remove();
             });
-  
+
           animateFish(fish);
         }
       }
@@ -1431,7 +1450,9 @@ async function fetchData() {
         }
 
         // Remove secondary legend when zoomed out
-        d3.selectAll('.legend-group, tooltip, .tooltip-depth, .tooltip-size, .tooltip-dep')
+        d3.selectAll(
+          '.legend-group, tooltip, .tooltip-depth, .tooltip-size, .tooltip-dep'
+        )
           .transition()
           .duration(400)
           .style('opacity', 0)
@@ -1443,7 +1464,6 @@ async function fetchData() {
         // tree map description return when exit treemap
         description.transition().duration(750).style('opacity', 1);
       }
-
     });
 
     //--------------------------------------------
@@ -1467,6 +1487,3 @@ async function fetchData() {
 }
 
 fetchData();
-
-
-          

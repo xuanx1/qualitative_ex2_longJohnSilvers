@@ -1,41 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hello Neighbour...</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" />
-    <link href="https://fonts.cdnfonts.com/css/shorelines-script-bold" rel="stylesheet">
 
+    <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <!-- Leaflet CSS and JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <!-- Tippy.js CSS and JS -->
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
-    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/tippy.js@6/themes/light.css"
+    />
+
+    <!-- Lost Fish Font -->
+    <link href="https://fonts.cdnfonts.com/css/lost-fish" rel="stylesheet" />
 
     <style>
       body {
         padding: 30px;
       }
-  
+
       h1 {
         font-size: 32px;
-        font-family: 'Open Sans', sans-serif;
-        font-weight: regular;
-        color: dark grey;
+        font-family: 'Lost Fish', 'Open Sans', sans-serif;
+        font-weight: normal;
+        color: darkgrey;
         text-align: center;
       }
-  
+
       @media (max-width: 600px) {
         body {
           padding: 15px;
         }
-  
+
         h1 {
           font-size: 24px;
         }
@@ -45,7 +53,6 @@
   <body>
     <div id="intro"></div>
     <div id="app"></div>
-     <!-- <script type="module" src="main.js" async></script> -->
     <script type="module" src="main9.js" async></script>
   </body>
 </html>
