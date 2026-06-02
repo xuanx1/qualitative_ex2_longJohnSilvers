@@ -5,28 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hello Neighbour...</title>
 
-    <!-- D3.js -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- D3.js (local) -->
+    <script src="./vendor/d3.v7.min.js"></script>
 
-    <!-- Leaflet CSS and JS -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-    />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Leaflet CSS and JS (local) -->
+    <link rel="stylesheet" href="./vendor/leaflet/leaflet.css" />
+    <script src="./vendor/leaflet/leaflet.js"></script>
 
-    <!-- Tippy.js CSS and JS -->
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/tippy.js@6/themes/light.css"
-    />
-
-    <!-- Lost Fish Font -->
-    <link href="https://fonts.cdnfonts.com/css/lost-fish" rel="stylesheet" />
+    <!-- Lost Fish Font (local) -->
+    <link href="./vendor/fonts/lost-fish.css" rel="stylesheet" />
 
     <style>
+      html,
+      body {
+        overflow-x: hidden;
+      }
+
       body {
         padding: 30px;
       }
